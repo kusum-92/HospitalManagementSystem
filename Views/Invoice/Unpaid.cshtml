@@ -1,0 +1,33 @@
+@model IEnumerable<HospitalManagementSystem.Models.Invoice>
+@{
+    ViewData["Title"] = "Unpaid Invoices";
+}
+<h2>Unpaid Invoices</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Invoice #</th>
+            <th>Date Issued</th>
+            <th>Amount</th>
+            <th>Patient</th>
+            <th>Appointment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var invoice in Model)
+    {
+        <tr>
+            <td>@invoice.InvoiceId</td>
+            <td>@invoice.DateIssued.ToShortDateString()</td>
+            <td>@invoice.Amount.ToString("C")</td>
+            <td>@invoice.Patient?.FullName</td>
+            <td>@invoice.AppointmentId</td>
+            <td>
+                <a asp-action="MarkAsPaid" asp-route-id="@invoice.InvoiceId" class="btn btn-success btn-sm">Mark as Paid</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
