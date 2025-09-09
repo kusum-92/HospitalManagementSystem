@@ -55,7 +55,7 @@ namespace HospitalManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Appointment appointment)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 ViewBag.Patients = await _patientRepo.GetAllAsync();
                 ViewBag.Doctors = await _doctorRepo.GetAllAsync();
@@ -102,7 +102,7 @@ namespace HospitalManagementSystem.Controllers
             if (id != appointment.AppointmentId)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 ViewBag.Patients = await _patientRepo.GetAllAsync();
                 ViewBag.Doctors = await _doctorRepo.GetAllAsync();

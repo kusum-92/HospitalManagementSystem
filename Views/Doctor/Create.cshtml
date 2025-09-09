@@ -1,5 +1,4 @@
 @model HospitalManagementSystem.Models.Doctor
-
 @{
     ViewData["Title"] = "Create Doctor";
 }
@@ -21,7 +20,7 @@
 
     <div class="form-group mb-3">
         <label asp-for="DepartmentId" class="form-label"></label>
-        <select asp-for="DepartmentId" class="form-select" asp-items="@(new SelectList(ViewBag.Departments, "DepartmentId", "Name"))">
+        <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.Departments">
             <option value="">-- Select Department --</option>
         </select>
         <span asp-validation-for="DepartmentId" class="text-danger"></span>

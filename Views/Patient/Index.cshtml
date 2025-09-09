@@ -24,7 +24,6 @@
                         <th>DOB</th>
                         <th>Gender</th>
                         <th>Contact</th>
-                        <th>Email</th>
                         <th style="width: 140px;">Actions</th>
                     </tr>
                 </thead>
@@ -48,13 +47,13 @@
                                 <td>@patient.ContactNumber</td>
                                 <td>
                                     <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-sm btn-info me-1" title="View Details">
-                                        <i class="bi bi-eye"></i>
+                                        <i class="bi bi-eye">Details</i>
                                     </a>
                                     <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning me-1" title="Edit Patient">
-                                        <i class="bi bi-pencil-square"></i>
+                                        <i class="bi bi-pencil-square">Edit</i>
                                     </a>
                                     <a asp-action="Delete" asp-route-id="@patient.Id" class="btn btn-sm btn-danger" title="Delete Patient">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash">Delete</i>
                                     </a>
                                 </td>
                             </tr>

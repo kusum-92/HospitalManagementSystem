@@ -11,6 +11,6 @@ namespace HospitalManagementSystem.Repository.Interfaces
         Task AddAsync(Department department);
         void Update(Department department);
         void Delete(Department department);
-       // Task SaveAsync();
+        Task SaveAsync();
     }
 }

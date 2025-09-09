@@ -3,6 +3,7 @@ using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HospitalManagementSystem.Controllers
 {
@@ -37,7 +38,8 @@ namespace HospitalManagementSystem.Controllers
         // GET: /Doctor/Create
         public async Task<IActionResult> Create()
         {
-            ViewBag.Departments = await _departmentRepo.GetAllAsync();
+            var departments = await _departmentRepo.GetAllAsync() ?? new List<Department>();
+            ViewBag.Departments = new SelectList(departments, "DepartmentID", "Name");
             return View();
         }
 
@@ -46,9 +48,10 @@ namespace HospitalManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Doctor doctor)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ViewBag.Departments = await _departmentRepo.GetAllAsync();
+                var departments = await _departmentRepo.GetAllAsync() ?? new List<Department>();
+                ViewBag.Departments = new SelectList(departments, "DepartmentID", "Name", doctor.DepartmentId);
                 return View(doctor);
             }
 
@@ -65,7 +68,8 @@ namespace HospitalManagementSystem.Controllers
             if (doctor == null)
                 return NotFound();
 
-            ViewBag.Departments = await _departmentRepo.GetAllAsync();
+            var departments = await _departmentRepo.GetAllAsync() ?? new List<Department>();
+            ViewBag.Departments = new SelectList(departments, "DepartmentID", "Name", doctor.DepartmentId);
             return View(doctor);
         }
 
@@ -77,14 +81,15 @@ namespace HospitalManagementSystem.Controllers
             if (id != doctor.DoctorId)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ViewBag.Departments = await _departmentRepo.GetAllAsync();
+                var departments = await _departmentRepo.GetAllAsync() ?? new List<Department>();
+                ViewBag.Departments = new SelectList(departments, "DepartmentID", "Name", doctor.DepartmentId);
                 return View(doctor);
             }
 
-            _doctorRepo.Update(doctor);  // synchronous update
-            await _doctorRepo.SaveAsync();  // async save
+            _doctorRepo.Update(doctor);
+            await _doctorRepo.SaveAsync();
 
             return RedirectToAction(nameof(Index));
         }

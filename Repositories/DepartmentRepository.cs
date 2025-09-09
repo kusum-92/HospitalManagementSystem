@@ -46,9 +46,9 @@ namespace HospitalManagementSystem.Repository.Repositories
             _context.Departments.Remove(department);
         }
 
-        //public async Task SaveAsync()
-        //{
-        //    await _context.SaveChangesAsync();
-        //}
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

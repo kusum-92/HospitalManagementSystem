@@ -42,7 +42,7 @@ namespace HospitalManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Patient patient)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
                 return View(patient);
 
             await _patientRepo.AddAsync(patient);
@@ -69,7 +69,7 @@ namespace HospitalManagementSystem.Controllers
             if (id != patient.Id)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
                 return View(patient);
 
             _patientRepo.Update(patient);

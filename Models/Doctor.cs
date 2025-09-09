@@ -13,8 +13,8 @@ namespace HospitalManagementSystem.Models
 
         // Fixed ForeignKey attribute: it should reference the navigation property name
         [ForeignKey(nameof(Department))]
-        public int DepartmentId { get; set; }
-        public Department Department { get; set; }
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
         public ICollection<Appointment> Appointments { get; set; } //get doctor by appointments
     }
 
