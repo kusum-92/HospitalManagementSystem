@@ -1,0 +1,70 @@
+﻿@model HospitalManagementSystem.Models.Appointment
+
+@{
+    ViewData["Title"] = "Create Appointment";
+    var patients = ViewBag.Patients as IEnumerable<HospitalManagementSystem.Models.Patient>;
+    var doctors = ViewBag.Doctors as IEnumerable<HospitalManagementSystem.Models.Doctor>;
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary mb-4 fw-bold">
+        🩺 Schedule a New Appointment
+    </h2>
+
+    <form asp-action="Create" method="post" class="shadow-sm p-4 rounded bg-light">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Appointment Date -->
+        <div class="mb-3">
+            <label asp-for="AppointmentDate" class="form-label fw-semibold">
+                <i class="bi bi-calendar-event me-1"></i> Appointment Date & Time
+            </label>
+            <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+        </div>
+
+        <!-- Patient Dropdown -->
+        <div class="mb-3">
+            <label asp-for="PatientId" class="form-label fw-semibold">
+                <i class="bi bi-person-fill me-1"></i> Select Patient
+            </label>
+            <select asp-for="PatientId" class="form-select">
+                <option disabled selected value="">-- Choose a patient --</option>
+                @foreach (var patient in patients)
+                {
+                    <option value="@patient.Id">@patient.FullName</option>
+                }
+            </select>
+            <span asp-validation-for="PatientId" class="text-danger"></span>
+        </div>
+
+        <!-- Doctor Dropdown -->
+        <div class="mb-4">
+            <label asp-for="DoctorId" class="form-label fw-semibold">
+                <i class="bi bi-person-badge-fill me-1"></i> Select Doctor
+            </label>
+            <select asp-for="DoctorId" class="form-select">
+                <option disabled selected value="">-- Choose a doctor --</option>
+                @foreach (var doctor in doctors)
+                {
+                    <option value="@doctor.DoctorId">@doctor.FullName (@doctor.Specialization)</option>
+                }
+            </select>
+            <span asp-validation-for="DoctorId" class="text-danger"></span>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-calendar-plus"></i> Schedule Appointment
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
