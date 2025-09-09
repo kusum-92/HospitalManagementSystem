@@ -1,0 +1,50 @@
+﻿@model HospitalManagementSystem.Models.Appointment
+
+@{
+    ViewData["Title"] = "Edit Appointment";
+    var patients = ViewBag.Patients as IEnumerable<HospitalManagementSystem.Models.Patient>;
+    var doctors = ViewBag.Doctors as IEnumerable<HospitalManagementSystem.Models.Doctor>;
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Appointment</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="AppointmentId" />
+
+                <div class="mb-3">
+                    <label asp-for="PatientId" class="form-label">Patient</label>
+                    <select asp-for="PatientId" class="form-select" asp-items="@(new SelectList(patients, "Id", "FullName"))">
+                        <option disabled selected>-- Select Patient --</option>
+                    </select>
+                    <span asp-validation-for="PatientId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DoctorId" class="form-label">Doctor</label>
+                    <select asp-for="DoctorId" class="form-select" asp-items="@(new SelectList(doctors, "DoctorId", "FullName"))">
+                        <option disabled selected>-- Select Doctor --</option>
+                    </select>
+                    <span asp-validation-for="DoctorId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AppointmentDate" class="form-label">Appointment Date</label>
+                    <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="bi bi-save me-1"></i> Save Changes
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

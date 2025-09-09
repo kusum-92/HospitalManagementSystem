@@ -1,126 +1,116 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Controllers
 {
     public class DoctorController : Controller
     {
-        private readonly IDoctor _doctorRepository;
-        private readonly IDepartment _departmentRepository;
+        private readonly IDoctorRepository _doctorRepo;
+        private readonly IDepartmentRepository _departmentRepo;
 
-        public DoctorController(IDoctor doctorRepository, IDepartment departmentRepository)
+        public DoctorController(IDoctorRepository doctorRepo, IDepartmentRepository departmentRepo)
         {
-            _doctorRepository = doctorRepository;
-            _departmentRepository = departmentRepository;
+            _doctorRepo = doctorRepo;
+            _departmentRepo = departmentRepo;
         }
 
-        // GET: Doctor
+        // GET: /Doctor
         public async Task<IActionResult> Index()
         {
-            var doctors = await _doctorRepository.GetAllAsync();
+            var doctors = await _doctorRepo.GetAllAsync();
             return View(doctors);
         }
 
-        // GET: Doctor/Details/5
+        // GET: /Doctor/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var doctor = await _doctorRepository.GetByIdAsync(id);
+            var doctor = await _doctorRepo.GetByIdAsync(id);
             if (doctor == null)
                 return NotFound();
+
             return View(doctor);
         }
 
-        // GET: Doctor/ByAppointment/5
-        public async Task<IActionResult> ByAppointment(int appointmentId)
-        {
-            var doctor = await _doctorRepository.GetByAppointmentIdAsync(appointmentId);
-            if (doctor == null)
-                return NotFound();
-            return View("Details", doctor);
-        }
-
-        // Helper to populate departments dropdown
-        private async Task PopulateDepartmentsAsync(int? selected = null)
-        {
-            var departments = await _departmentRepository.GetAllAsync();
-            ViewBag.Departments = new SelectList(departments, "DepartmentID", "Name", selected);
-        }
-
-        // GET: Doctor/Create
+        // GET: /Doctor/Create
         public async Task<IActionResult> Create()
         {
-            await PopulateDepartmentsAsync();   
+            ViewBag.Departments = await _departmentRepo.GetAllAsync();
             return View();
         }
 
-        // POST: Doctor/Create
+        // POST: /Doctor/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FullName,Specialization,DepartmentId")] Doctor doctor)
+        public async Task<IActionResult> Create(Doctor doctor)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await PopulateDepartmentsAsync(doctor.DepartmentId);
+                ViewBag.Departments = await _departmentRepo.GetAllAsync();
                 return View(doctor);
             }
 
-            await _doctorRepository.AddAsync(doctor);
-            await _doctorRepository.SaveAsync();
+            await _doctorRepo.AddAsync(doctor);
+            await _doctorRepo.SaveAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Doctor/Edit/5
+        // GET: /Doctor/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var doctor = await _doctorRepository.GetByIdAsync(id);
+            var doctor = await _doctorRepo.GetByIdAsync(id);
             if (doctor == null)
                 return NotFound();
-            await PopulateDepartmentsAsync(doctor.DepartmentId);
+
+            ViewBag.Departments = await _departmentRepo.GetAllAsync();
             return View(doctor);
         }
 
-        // POST: Doctor/Edit/5
+        // POST: /Doctor/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DoctorId,FullName,Specialization,DepartmentId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, Doctor doctor)
         {
             if (id != doctor.DoctorId)
-                return NotFound();
+                return BadRequest();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await PopulateDepartmentsAsync(doctor.DepartmentId);
+                ViewBag.Departments = await _departmentRepo.GetAllAsync();
                 return View(doctor);
             }
 
-            _doctorRepository.Update(doctor);
-            await _doctorRepository.SaveAsync();
+            _doctorRepo.Update(doctor);  // synchronous update
+            await _doctorRepo.SaveAsync();  // async save
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Doctor/Delete/5
+        // GET: /Doctor/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var doctor = await _doctorRepository.GetByIdAsync(id);
+            var doctor = await _doctorRepo.GetByIdAsync(id);
             if (doctor == null)
                 return NotFound();
+
             return View(doctor);
         }
 
-        // POST: Doctor/Delete/5
+        // POST: /Doctor/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _doctorRepository.GetByIdAsync(id);
-            if (doctor != null)
-            {
-                _doctorRepository.Delete(doctor);
-                await _doctorRepository.SaveAsync();
-            }
+            var doctor = await _doctorRepo.GetByIdAsync(id);
+            if (doctor == null)
+                return NotFound();
+
+            _doctorRepo.Delete(doctor);  // synchronous delete
+            await _doctorRepo.SaveAsync();  // async save
+
             return RedirectToAction(nameof(Index));
         }
     }

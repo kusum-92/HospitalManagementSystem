@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HospitalManagementSystem.Models
 {
@@ -7,9 +6,7 @@ namespace HospitalManagementSystem.Models
     {
         [Key]
         public int DepartmentID { get; set; }
-
-        [Required(ErrorMessage = "Department name is required")]
-        [StringLength(100)]
+        [Required]
         public string? Name { get; set; }
 
         // Initialized to avoid null refs

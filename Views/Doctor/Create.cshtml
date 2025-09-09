@@ -4,36 +4,35 @@
     ViewData["Title"] = "Create Doctor";
 }
 
-<h1>Create Doctor</h1>
+<h2>Create Doctor</h2>
 
 <form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="form-group">
-        <label asp-for="FullName"></label>
+    <div class="form-group mb-3">
+        <label asp-for="FullName" class="form-label"></label>
         <input asp-for="FullName" class="form-control" />
         <span asp-validation-for="FullName" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Specialization"></label>
+    <div class="form-group mb-3">
+        <label asp-for="Specialization" class="form-label"></label>
         <input asp-for="Specialization" class="form-control" />
         <span asp-validation-for="Specialization" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="DepartmentId"></label>
-        <select asp-for="DepartmentId" class="form-control" asp-items="ViewBag.Departments">
+    <div class="form-group mb-3">
+        <label asp-for="DepartmentId" class="form-label"></label>
+        <select asp-for="DepartmentId" class="form-select" asp-items="@(new SelectList(ViewBag.Departments, "DepartmentId", "Name"))">
             <option value="">-- Select Department --</option>
         </select>
         <span asp-validation-for="DepartmentId" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

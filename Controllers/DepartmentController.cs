@@ -1,96 +1,106 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartment _departmentRepository;
+        private readonly IDepartmentRepository _departmentRepo;
 
-        public DepartmentController(IDepartment departmentRepository)
+        public DepartmentController(IDepartmentRepository departmentRepo)
         {
-            _departmentRepository = departmentRepository;
+            _departmentRepo = departmentRepo;
         }
 
-        // GET: Department
+        // GET: /Department
         public async Task<IActionResult> Index()
         {
-            var departments = await _departmentRepository.GetAllAsync();
+            var departments = await _departmentRepo.GetAllAsync();
             return View(departments);
         }
 
-        // GET: Department/Details/5
+        // GET: /Department/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
+            var department = await _departmentRepo.GetByIdAsync(id);
             if (department == null)
                 return NotFound();
+
             return View(department);
         }
 
-        // GET: Department/Create
-        public IActionResult Create() => View();
+        // GET: /Department/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        // POST: Department/Create
+        // POST: /Department/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Department department)
+        public async Task<IActionResult> Create(Department department)
         {
             if (!ModelState.IsValid)
                 return View(department);
 
-            await _departmentRepository.AddAsync(department);
-            await _departmentRepository.SaveAsync();
+            await _departmentRepo.AddAsync(department);
+            
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Department/Edit/5
+        // GET: /Department/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
+            var department = await _departmentRepo.GetByIdAsync(id);
             if (department == null)
                 return NotFound();
+
             return View(department);
         }
 
-        // POST: Department/Edit/5
+        // POST: /Department/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DepartmentID,Name")] Department department)
+        public async Task<IActionResult> Edit(int id, Department department)
         {
             if (id != department.DepartmentID)
-                return NotFound();
+                return BadRequest();
 
             if (!ModelState.IsValid)
                 return View(department);
 
-            _departmentRepository.Update(department);
-            await _departmentRepository.SaveAsync();
+            _departmentRepo.Update(department);
+            //await _departmentRepo.SaveAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Department/Delete/5
+        // GET: /Department/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
+            var department = await _departmentRepo.GetByIdAsync(id);
             if (department == null)
                 return NotFound();
+
             return View(department);
         }
 
-        // POST: Department/Delete/5
+        // POST: /Department/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
-            if (department != null)
-            {
-                _departmentRepository.Delete(department);
-                await _departmentRepository.SaveAsync();
-            }
+            var department = await _departmentRepo.GetByIdAsync(id);
+            if (department == null)
+                return NotFound();
+
+            _departmentRepo.Delete(department);
+            //await _departmentRepo.SaveAsync();
+
             return RedirectToAction(nameof(Index));
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Repository.Repositories
 {
-    public class DoctorRepository : IDoctor
+    public class DoctorRepository : IDoctorRepository
     {
         private readonly AppDbContext _context;
 

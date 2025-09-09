@@ -2,18 +2,21 @@ using HospitalManagementSystem.Data;
 //using HospitalManagementSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
 using HospitalManagementSystem.Repository.Repositories;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AppCon")));
-builder.Services.AddTransient<IDoctor, DoctorRepository>();
-builder.Services.AddTransient<IDepartment, DepartmentRepository>();
 
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

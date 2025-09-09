@@ -1,0 +1,68 @@
+﻿@model HospitalManagementSystem.Models.Patient
+
+@{
+    ViewData["Title"] = "Add New Patient";
+}
+
+<div class="card shadow-sm mt-4 border-primary">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4>
+            <i class="bi bi-person-plus-fill me-2"></i> Add New Patient
+        </h4>
+        <a asp-action="Index" class="btn btn-light btn-sm">
+            <i class="bi bi-arrow-left-circle me-1"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">
+                    <i class="bi bi-person-fill me-1 text-primary"></i> Full Name
+                </label>
+                <input asp-for="FullName" class="form-control" placeholder="Enter patient's full name" required />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DOB" class="form-label">
+                    <i class="bi bi-calendar-event-fill me-1 text-primary"></i> Date of Birth
+                </label>
+                <input asp-for="DOB" type="date" class="form-control" required />
+                <span asp-validation-for="DOB" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Gender" class="form-label">
+                    <i class="bi bi-gender-ambiguous me-1 text-primary"></i> Gender
+                </label>
+                <select asp-for="Gender" class="form-select" required>
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            
+
+            <div class="mb-3">
+                <label asp-for="ContactNumber" class="form-label">
+                    <i class="bi bi-telephone-fill me-1 text-primary"></i> Phone Number
+                </label>
+                <input asp-for="ContactNumber" type="tel" class="form-control" placeholder="Enter phone number" />
+                <span asp-validation-for="ContactNumber" class="text-danger"></span>
+            </div>
+
+            
+
+            <button type="submit" class="btn btn-primary">
+                <a class="bi bi-save me-1"></a> Save Patient
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

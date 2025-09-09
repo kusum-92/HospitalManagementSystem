@@ -4,31 +4,32 @@
     ViewData["Title"] = "Departments";
 }
 
-<h1>Departments</h1>
+<h2>Departments</h2>
+
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New Department</a>
 </p>
 
-<table class="table table-striped">
-    <thead>
+<table class="table table-striped table-bordered">
+    <thead class="table-primary">
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Name)</th>
-            <th>Doctors Count</th>
-            <th></th>
+            <th>Department Name</th>
+            <th>Number of Doctors</th>
+            <th style="width:180px;">Actions</th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Name)</td>
-            <td>@(item.Doctors?.Count ?? 0)</td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.DepartmentID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.DepartmentID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.DepartmentID })
-            </td>
-        </tr>
-    }
+        @foreach (var dept in Model)
+        {
+            <tr>
+                <td>@dept.Name</td>
+                <td>@(dept.Doctors?.Count() ?? 0)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@dept.DepartmentID" class="btn btn-info btn-sm me-1">Details</a>
+                    <a asp-action="Edit" asp-route-id="@dept.DepartmentID" class="btn btn-warning btn-sm me-1">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@dept.DepartmentID" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
