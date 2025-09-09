@@ -32,6 +32,16 @@ namespace HospitalManagementSystem.Repository.Repositories
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
         }
 
+        public async Task<Doctor?> GetByAppointmentIdAsync(int appointmentId)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.Doctor)
+                .ThenInclude(d => d.Department)
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
+
+            return appointment?.Doctor;
+        }
+
         public async Task AddAsync(Doctor doctor)
         {
             await _context.Doctors.AddAsync(doctor);
