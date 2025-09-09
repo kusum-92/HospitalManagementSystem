@@ -46,7 +46,7 @@ namespace HospitalManagementSystem.Controllers
                 return View(department);
 
             await _departmentRepo.AddAsync(department);
-            await _departmentRepo.SaveAsync();
+            
 
             return RedirectToAction(nameof(Index));
         }
@@ -73,7 +73,7 @@ namespace HospitalManagementSystem.Controllers
                 return View(department);
 
             _departmentRepo.Update(department);
-            await _departmentRepo.SaveAsync();
+            //await _departmentRepo.SaveAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -98,7 +98,7 @@ namespace HospitalManagementSystem.Controllers
                 return NotFound();
 
             _departmentRepo.Delete(department);
-            await _departmentRepo.SaveAsync();
+            //await _departmentRepo.SaveAsync();
 
             return RedirectToAction(nameof(Index));
         }

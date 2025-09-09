@@ -33,6 +33,7 @@ namespace HospitalManagementSystem.Repository.Repositories
         public async Task AddAsync(Department department)
         {
             await _context.Departments.AddAsync(department);
+            await _context.SaveChangesAsync();
         }
 
         public void Update(Department department)
@@ -45,9 +46,9 @@ namespace HospitalManagementSystem.Repository.Repositories
             _context.Departments.Remove(department);
         }
 
-        public async Task SaveAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveAsync()
+        //{
+        //    await _context.SaveChangesAsync();
+        //}
     }
 }
