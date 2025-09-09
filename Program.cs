@@ -2,6 +2,8 @@ using HospitalManagementSystem.Data;
 //using HospitalManagementSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using HospitalManagementSystem.Repository.Interfaces;
+using HospitalManagementSystem.Repository.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AppCon")));
-
+builder.Services.AddTransient<IDoctor, DoctorRepository>();
+builder.Services.AddTransient<IDepartment, DepartmentRepository>();
 
 var app = builder.Build();
 
