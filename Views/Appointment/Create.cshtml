@@ -23,20 +23,30 @@
             <span asp-validation-for="AppointmentDate" class="text-danger"></span>
         </div>
 
-        <!-- Patient Dropdown -->
-        <div class="mb-3">
-            <label asp-for="PatientId" class="form-label fw-semibold">
-                <i class="bi bi-person-fill me-1"></i> Select Patient
-            </label>
-            <select asp-for="PatientId" class="form-select">
-                <option disabled selected value="">-- Choose a patient --</option>
-                @foreach (var patient in patients)
-                {
-                    <option value="@patient.Id">@patient.FullName</option>
-                }
-            </select>
-            <span asp-validation-for="PatientId" class="text-danger"></span>
-        </div>
+        <!-- Patient -->
+        @if (User.IsInRole("Admin"))
+        {
+            <!-- Admin: show dropdown -->
+            <div class="mb-3">
+                <label asp-for="PatientId" class="form-label fw-semibold">
+                    <i class="bi bi-person-fill me-1"></i> Select Patient
+                </label>
+                <select asp-for="PatientId" class="form-select">
+                    <option disabled selected value="">-- Choose a patient --</option>
+                    @foreach (var patient in patients)
+                    {
+                        <option value="@patient.Id">@patient.FullName</option>
+                    }
+                </select>
+                <span asp-validation-for="PatientId" class="text-danger"></span>
+            </div>
+        }
+        else if (User.IsInRole("Patient"))
+        {
+            <!-- Patient: hidden field, auto-assigned -->
+            <input type="hidden" asp-for="PatientId" />
+            <p><strong>Patient:</strong> @User.Identity.Name</p>
+        }
 
         <!-- Doctor Dropdown -->
         <div class="mb-4">

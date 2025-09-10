@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,103 +9,92 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalManagementSystem.styles.css" asp-append-version="true" />
-
-    <style>
-        /* Navbar brand and menu item spacing */
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 1.6rem;
-            padding-left: 15px;
-            padding-right: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px; /* space between icon and text */
-        }
-
-            /* Example if you add an icon inside the brand */
-            .navbar-brand i {
-                font-size: 1.8rem;
-            }
-
-        /* Add horizontal margin between nav items */
-        .navbar-nav .nav-item {
-            margin-left: 15px;
-            margin-right: 15px;
-        }
-
-        /* Nav link styling */
-        .navbar-nav .nav-link {
-            font-size: 1.1rem;
-            padding: 0.5rem 0.8rem;
-            white-space: nowrap; /* prevent wrapping */
-            color: white !important; /* ensure text color is white */
-        }
-
-        /* Navbar background color and padding */
-        .navbar {
-            padding-top: 0.7rem;
-            padding-bottom: 0.7rem;
-            background-color: #007bff; /* Bootstrap primary blue */
-        }
-
-        /* Navbar toggler button color for mobile */
-        .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .navbar-toggler-icon {
-            filter: brightness(0) invert(1);
-        }
-
-        /* Footer styling */
-        footer {
-            background-color: #f8f9fa;
-            padding: 1rem 0;
-            font-size: 0.9rem;
-            text-align: center;
-            color: #6c757d;
-        }
-
-        /* Container padding for main content */
-        main {
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3" style="background-color: #007bff;">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">
-                    <!-- Optional icon -->
-                    <!--<i class="bi bi-hospital"></i>-->
+                <a class="navbar-brand text-white fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
                     HospitalManagementSystem
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
-                    <ul class="navbar-nav ms-auto align-items-center">
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Doctor" asp-action="Index">Doctors</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Patient" asp-action="Index">Patients</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Invoice" asp-action="Index">Invoices</a>
-                        </li>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                        {
+                            @* Admin Menu *@
+                            @if (HttpContextAccessor.HttpContext.User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Department" asp-action="Index">Departments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Doctor" asp-action="Index">Doctors</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Patient" asp-action="Index">Patients</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Appointment" asp-action="Index">Appointments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Invoice" asp-action="Index">Invoices</a></li>
+                            }
+                            @* Doctor Menu *@
+                            else if (HttpContextAccessor.HttpContext.User.IsInRole("Doctor"))
+                            {
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Appointment" asp-action="Index">My Appointments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Patient" asp-action="Index">My Patients</a></li>
+                            }
+                            @* Patient Menu *@
+                            else if (HttpContextAccessor.HttpContext.User.IsInRole("Patient"))
+                            {
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Appointment" asp-action="Index">My Appointments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Invoice" asp-action="Index">My Invoices</a></li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a></li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="navbar-text text-light me-3">
+                                    Hello, @HttpContextAccessor.HttpContext.User.Identity.Name!
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-action="Logout" asp-controller="" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            @* Login Dropdown *@
+                            <li class="nav-item dropdown mx-2">
+                                <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Login
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="loginDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="LoginPatient">Login as Patient</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="LoginDoctor">Login as Doctor</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Login">Login as Admin</a></li>
+                                </ul>
+                            </li>
+
+                            @* Register Dropdown *@
+                            <li class="nav-item dropdown mx-2">
+                                <a class="btn btn-light btn-sm dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Register
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="registerDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="RegisterPatient">Register as Patient</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="RegisterDoctor">Register as Doctor</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -118,10 +109,9 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels😁
+            &copy; @DateTime.Now.Year - HospitalManagementSystem - Made by Razor Rebels 😁
         </div>
     </footer>
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

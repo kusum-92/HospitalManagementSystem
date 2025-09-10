@@ -1,0 +1,11 @@
+﻿@model HospitalManagementSystem.Models.Doctor
+
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+}
+
+<h2>Welcome, Dr. @Model.FullName</h2>
+<p><strong>Specialization:</strong> @Model.Specialization</p>
+<p><strong>Department:</strong> @Model?.Department?.Name</p>
+
+< a asp-controller="Login" asp-action="/Logout" class="btn btn-danger">Logout</a>

@@ -15,9 +15,9 @@ namespace HospitalManagementSystem.Models
         [Required]
         public string ContactNumber { get; set; }
 
-        public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<Appointment?> Appointments { get; set; }
 
-        public ICollection<Invoice> Invoices { get; set; }
+        public ICollection<Invoice?> Invoices { get; set; }
     }
 
 }

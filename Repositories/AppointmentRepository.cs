@@ -51,5 +51,15 @@ namespace HospitalManagementSystem.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Appointment>> GetByPatientIdAsync(int patientId)
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Include(a => a.Invoice)
+                .Where(a => a.PatientId == patientId)
+                .ToListAsync();
+        }
+
     }
 }

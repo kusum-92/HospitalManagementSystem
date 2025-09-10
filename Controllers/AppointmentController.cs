@@ -1,11 +1,13 @@
 ﻿using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Controllers
 {
+    [Authorize]
     public class AppointmentController : Controller
     {
         private readonly IAppointmentRepository _appointmentRepo;
@@ -28,25 +30,33 @@ namespace HospitalManagementSystem.Controllers
         // GET: /Appointment
         public async Task<IActionResult> Index()
         {
-            var appointments = await _appointmentRepo.GetAllAsync();
-            return View(appointments);
-        }
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(patientIdClaim, out var patientId))
+                    return Unauthorized();
 
-        // GET: /Appointment/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var appointment = await _appointmentRepo.GetByIdAsync(id);
-            if (appointment == null)
-                return NotFound();
+                var appointments = await _appointmentRepo.GetByPatientIdAsync(patientId);
+                return View(appointments);
+            }
 
-            return View(appointment);
+            // Admin & Doctor see all appointments
+            var allAppointments = await _appointmentRepo.GetAllAsync();
+            return View(allAppointments);
         }
 
         // GET: /Appointment/Create
         public async Task<IActionResult> Create()
         {
-            ViewBag.Patients = await _patientRepo.GetAllAsync();
-            ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+            if (User.IsInRole("Patient"))
+            {
+                ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                ViewBag.Patients = await _patientRepo.GetAllAsync();
+                ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+            }
             return View();
         }
 
@@ -55,10 +65,25 @@ namespace HospitalManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Appointment appointment)
         {
+            // Assign PatientId based on role
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(patientIdClaim, out var patientId))
+                    return Unauthorized();
+
+                appointment.PatientId = patientId;
+            }
+
             if (ModelState.IsValid)
             {
-                ViewBag.Patients = await _patientRepo.GetAllAsync();
-                ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                if (User.IsInRole("Patient"))
+                    ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                else if (User.IsInRole("Admin"))
+                {
+                    ViewBag.Patients = await _patientRepo.GetAllAsync();
+                    ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                }
                 return View(appointment);
             }
 
@@ -71,8 +96,8 @@ namespace HospitalManagementSystem.Controllers
             {
                 AppointmentId = appointment.AppointmentId,
                 PatientId = appointment.PatientId,
-                DateIssued = DateTime.Now,
-                Amount = 500m, // Replace with real calculation
+                DateIssued = System.DateTime.Now,
+                Amount = 500m,
                 IsPaid = false
             };
 
@@ -82,7 +107,26 @@ namespace HospitalManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Appointment/Edit/5
+        // GET: /Appointment/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var appointment = await _appointmentRepo.GetByIdAsync(id);
+            if (appointment == null)
+                return NotFound();
+
+            // Patients can only see their own appointments
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(patientIdClaim, out var patientId) || appointment.PatientId != patientId)
+                    return Unauthorized();
+            }
+
+            return View(appointment);
+        }
+
+        // GET: /Appointment/Edit/5 (Admin only)
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var appointment = await _appointmentRepo.GetByIdAsync(id);
@@ -97,12 +141,13 @@ namespace HospitalManagementSystem.Controllers
         // POST: /Appointment/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, Appointment appointment)
         {
             if (id != appointment.AppointmentId)
                 return BadRequest();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewBag.Patients = await _patientRepo.GetAllAsync();
                 ViewBag.Doctors = await _doctorRepo.GetAllAsync();
@@ -112,7 +157,7 @@ namespace HospitalManagementSystem.Controllers
             _appointmentRepo.Update(appointment);
             await _appointmentRepo.SaveAsync();
 
-            // Update invoice if it exists
+            // Update invoice if exists
             if (appointment.Invoice != null)
             {
                 var invoice = await _invoiceRepo.GetByIdAsync(appointment.Invoice.InvoiceId);
@@ -120,8 +165,7 @@ namespace HospitalManagementSystem.Controllers
                 {
                     invoice.PatientId = appointment.PatientId;
                     invoice.AppointmentId = appointment.AppointmentId;
-                    invoice.Amount = 500m; // Recalculate if needed
-
+                    invoice.Amount = 500m;
                     await _invoiceRepo.SaveAsync();
                 }
             }
@@ -130,6 +174,7 @@ namespace HospitalManagementSystem.Controllers
         }
 
         // GET: /Appointment/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var appointment = await _appointmentRepo.GetByIdAsync(id);
@@ -142,16 +187,15 @@ namespace HospitalManagementSystem.Controllers
         // POST: /Appointment/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var appointment = await _appointmentRepo.GetByIdAsync(id);
             if (appointment == null)
                 return NotFound();
 
-            _appointmentRepo.Delete(appointment);  // Synchronous Delete method
+            _appointmentRepo.Delete(appointment);
             await _appointmentRepo.SaveAsync();
-
-            // Invoice cascade delete should happen automatically
 
             return RedirectToAction(nameof(Index));
         }

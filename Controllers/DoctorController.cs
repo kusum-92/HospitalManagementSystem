@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using HospitalManagementSystem.Models;
+﻿using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DoctorController : Controller
     {
         private readonly IDoctorRepository _doctorRepo;
