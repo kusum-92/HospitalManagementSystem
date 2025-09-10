@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HospitalManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreation : Migration
+    public partial class Postfix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

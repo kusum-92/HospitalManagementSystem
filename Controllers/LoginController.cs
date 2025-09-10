@@ -16,9 +16,7 @@ namespace HospitalManagementSystem.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-
         private readonly ILogger<LoginController> _logger;
-
 
         public LoginController(
             AppDbContext context,
@@ -51,22 +49,20 @@ namespace HospitalManagementSystem.Controllers
                 return View();
             }
 
-            // store doctor id in session (optional for DB usage)
             _httpContextAccessor.HttpContext!.Session.SetInt32("DoctorId", doctor.DoctorId);
 
-            // ✅ Create claims for Doctor
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, doctor.DoctorId.ToString()),
-        new Claim(ClaimTypes.Name, doctor.FullName),
-        new Claim(ClaimTypes.Role, "Doctor")
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, doctor.DoctorId.ToString()),
+                new Claim(ClaimTypes.Name, doctor.FullName),
+                new Claim(ClaimTypes.Role, "Doctor")
+            };
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, "DoctorPatientCookie");
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
+                "DoctorPatientCookie",
                 principal,
                 new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60) }
             );
@@ -139,26 +135,24 @@ namespace HospitalManagementSystem.Controllers
 
             _httpContextAccessor.HttpContext!.Session.SetInt32("PatientId", patient.Id);
 
-            // ✅ Create claims for Patient
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, patient.Id.ToString()),
-        new Claim(ClaimTypes.Name, patient.FullName),
-        new Claim(ClaimTypes.Role, "Patient")
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, patient.Id.ToString()),
+                new Claim(ClaimTypes.Name, patient.FullName),
+                new Claim(ClaimTypes.Role, "Patient")
+            };
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, "DoctorPatientCookie");
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
+                "DoctorPatientCookie",
                 principal,
                 new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60) }
             );
 
             return RedirectToAction("DashboardPatient");
         }
-
 
         [HttpGet]
         public IActionResult RegisterPatient() => View();
@@ -167,7 +161,7 @@ namespace HospitalManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterPatient([Bind("FullName,DOB,Gender,ContactNumber")] Patient patient)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 _context.Patients.Add(patient);
                 await _context.SaveChangesAsync();
@@ -237,10 +231,10 @@ namespace HospitalManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            // Sign out cookie authentication
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // Sign out Doctor/Patient cookie authentication
+            await HttpContext.SignOutAsync("DoctorPatientCookie");  //CookieAuthenticationDefaults.AuthenticationScheme
 
-            // Sign out Identity
+            // Sign out Identity (for Admin)
             await _signInManager.SignOutAsync();
 
             // Redirect to Logout page
