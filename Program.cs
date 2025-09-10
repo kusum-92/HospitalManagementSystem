@@ -8,13 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllersWithViews();
 
+// DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AppCon")));
 
-// ? Identity for Admins
+// ? Identity for Admin
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -25,21 +26,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// ? Cookie Auth for Doctors/Patients + fallback login
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+// ? Cookie auth for Doctor/Patient (named scheme)
+builder.Services.AddAuthentication()
+    .AddCookie("DoctorPatientCookie", options =>
     {
-        options.LoginPath = "/Login/LoginPatient";   // fallback login page
+        options.LoginPath = "/Login/LoginPatient"; // fallback login page
         options.AccessDeniedPath = "/Home/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     });
 
-// Session config
+// Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -59,7 +55,7 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
 var app = builder.Build();
 
-// Seed Admin
+// Seed Admin & Roles
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -68,7 +64,7 @@ using (var scope = app.Services.CreateScope())
     await SeedAdminUserAsync(userManager, roleManager);
 }
 
-// Configure middleware
+// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -77,20 +73,18 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
 
 // =================== SEED ADMIN ===================
 async Task SeedAdminUserAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
@@ -98,13 +92,17 @@ async Task SeedAdminUserAsync(UserManager<IdentityUser> userManager, RoleManager
     string adminEmail = "admin@hms.com";
     string adminPassword = "Admin@123";
 
-    // 1. Create Admin role if not exists
+    // Create roles if not exist
     if (!await roleManager.RoleExistsAsync("Admin"))
-    {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
-    }
 
-    // 2. Create Admin user if not exists
+    if (!await roleManager.RoleExistsAsync("Doctor"))
+        await roleManager.CreateAsync(new IdentityRole("Doctor"));
+
+    if (!await roleManager.RoleExistsAsync("Patient"))
+        await roleManager.CreateAsync(new IdentityRole("Patient"));
+
+    // Create Admin user if not exists
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
     {
@@ -115,17 +113,9 @@ async Task SeedAdminUserAsync(UserManager<IdentityUser> userManager, RoleManager
             EmailConfirmed = true
         };
         var result = await userManager.CreateAsync(adminUser, adminPassword);
-
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
-
-    // ? Also create roles for Doctor & Patient (for consistency)
-    if (!await roleManager.RoleExistsAsync("Doctor"))
-        await roleManager.CreateAsync(new IdentityRole("Doctor"));
-
-    if (!await roleManager.RoleExistsAsync("Patient"))
-        await roleManager.CreateAsync(new IdentityRole("Patient"));
 }

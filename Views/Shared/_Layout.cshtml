@@ -64,7 +64,7 @@
                                 </span>
                             </li>
                             <li class="nav-item">
-                                <form asp-action="Logout" asp-controller="" method="post" class="d-inline">
+                                <form asp-action="Logout" asp-controller="Login" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-danger btn-sm">Logout</button>
                                 </form>
