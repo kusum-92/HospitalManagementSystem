@@ -1,0 +1,20 @@
+﻿@model HospitalManagementSystem.Models.Invoice
+@{
+    ViewData["Title"] = "Invoice Details";
+}
+<h2>Invoice Details</h2>
+<dl class="row">
+    <dt class="col-sm-2">Invoice #</dt>
+    <dd class="col-sm-10">@Model.InvoiceId</dd>
+    <dt class="col-sm-2">Date Issued</dt>
+    <dd class="col-sm-10">@Model.DateIssued.ToShortDateString()</dd>
+    <dt class="col-sm-2">Amount</dt>
+    <dd class="col-sm-10">@Model.Amount.ToString("C")</dd>
+    <dt class="col-sm-2">Paid</dt>
+    <dd class="col-sm-10">@Model.IsPaid</dd>
+    <dt class="col-sm-2">Patient</dt>
+    <dd class="col-sm-10">@Model.Patient?.FullName</dd>
+    <dt class="col-sm-2">Appointment</dt>
+    <dd class="col-sm-10">@Model.AppointmentId</dd>
+</dl>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

@@ -20,3 +20,65 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* ensure no browser default body margin */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Fixed full-screen BG layer (behind everything) */
+.hero-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/images/bg.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -2; /* behind content */
+    will-change: transform;
+}
+
+/* Semi-transparent overlay above the bg to improve contrast */
+.hero-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.45);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Home page content wrapper sits above overlay */
+.home-hero-content {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+/* Make navbar always on top */
+.navbar {
+    z-index: 1030;
+}
+
+/* Responsive tweak for very small screens */
+@media (max-width: 576px) {
+    .home-hero-content {
+        padding: 2rem 1rem;
+    }
+
+    .display-4 {
+        font-size: 2rem;
+    }
+}

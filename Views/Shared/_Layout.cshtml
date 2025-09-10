@@ -1,15 +1,109 @@
-﻿<!DOCTYPE html>
+﻿@{
+    // detect Home/Index so we can render home without the .container (full-bleed)
+    var currentController = (string)ViewContext.RouteData.Values["controller"] ?? "";
+    var currentAction = (string)ViewContext.RouteData.Values["action"] ?? "";
+    var isHomeIndex = string.Equals(currentController, "Home", System.StringComparison.OrdinalIgnoreCase)
+                      && string.Equals(currentAction, "Index", System.StringComparison.OrdinalIgnoreCase);
+
+    Layout = null;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HospitalManagementSystem</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalManagementSystem.styles.css" asp-append-version="true" />
+<<<<<<< Updated upstream
+=======
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        :root {
+            --header-height: 70px; /* if your navbar is taller/shorter, tweak this */
+            --footer-height: 60px; /* tweak if needed */
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        /* Reserve vertical space so content won't be hidden behind header/footer */
+        body {
+            padding-top: var(--header-height);
+            padding-bottom: var(--footer-height);
+        }
+
+        /* Fixed header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            z-index: 1100;
+        }
+
+        .navbar {
+            height: 100%;
+            background-color: #007bff !important; /* primary blue */
+            margin-bottom: 0;
+        }
+
+            .navbar .container-fluid {
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 600;
+        }
+
+        /* Fixed footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-height);
+            z-index: 1100;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            /* ✅ Center text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* main area is normal flow and scrollable (for non-home pages) */
+        main[role="main"] {
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        /* small utility: remove unwanted default margins when needed */
+        .no-top-gap {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    </style>
+>>>>>>> Stashed changes
 </head>
 <body>
+    <!-- HEADER (fixed) -->
     <header>
+<<<<<<< Updated upstream
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HospitalManagementSystem</a>
@@ -25,22 +119,64 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+=======
+        <nav class="navbar navbar-expand-sm border-bottom box-shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HospitalManagementSystem</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Departments</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="Index">Doctors</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Patient" asp-action="Index">Patients</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Invoice" asp-action="Index">Invoices</a></li>
+>>>>>>> Stashed changes
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+<<<<<<< Updated upstream
     <div class="container">
         <main role="main" class="pb-3">
+=======
+
+    @if (isHomeIndex)
+    {
+        <!-- Home page: render body full-bleed (no container) -->
+        <main role="main" class="no-top-gap">
+>>>>>>> Stashed changes
             @RenderBody()
         </main>
-    </div>
+    }
+    else
+    {
+        <!-- Other pages: keep normal container so existing pages are unchanged -->
+        <main role="main" class="container">
+            @RenderBody()
+        </main>
+    }
 
+<<<<<<< Updated upstream
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - HospitalManagementSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+=======
+    <!-- FOOTER (fixed & centered) -->
+    <footer>
+        &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels 😁
+    </footer>
+
+>>>>>>> Stashed changes
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

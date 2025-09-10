@@ -1,8 +1,73 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home - Hospital Management System";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    /* Use header/footer CSS variables from layout; if needed they fall back to values in layout */
+    :root {
+        --header-height: 70px;
+        --footer-height: 60px;
+    }
+
+    .home-hero {
+        /* pull behind the fixed header so there's no white gap */
+        margin-top: calc(-1 * var(--header-height));
+        padding-top: var(--header-height);
+        min-height: calc(100vh - var(--footer-height)); /* full-bleed minus footer */
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #fff;
+        overflow: hidden;
+    }
+
+        .home-hero .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('@Url.Content("~/images/bg.png")');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1;
+        }
+
+        .home-hero .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0,0,0,0.45);
+            z-index: 2;
+        }
+
+        .home-hero .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 1100px;
+            padding: 2rem;
+        }
+
+    /* responsive */
+   @@media (max-width: 576px) {
+        .home-hero .hero-content
+
+    {
+        padding: 1rem;
+    }
+
+    .home-hero h1 {
+        font-size: 1.6rem;
+    }
+
+    }
+</style>
+
+<div class="home-hero" role="banner">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+        <h1 class="display-4 mb-3">🏥 Hospital Management System</h1>
+        @* <p class="lead mb-0">Manage Departments, Doctors, Patients, Appointments, and Invoices seamlessly.</p> *@
+    </div>
 </div>

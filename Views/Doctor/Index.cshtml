@@ -1,0 +1,156 @@
+@model IEnumerable<HospitalManagementSystem.Models.Doctor>
+@{
+    ViewData["Title"] = "Doctors";
+}
+
+<div class="doctor-wrapper">
+    <!-- Background -->
+    <div class="doctor-bg-fixed"></div>
+    <div class="doctor-bg-overlay"></div>
+
+    <!-- Card -->
+    <div class="doctor-card">
+        <div class="doctor-header">
+            <h2>Doctors</h2>
+            <a asp-action="Create" class="btn btn-primary btn-lg" style="background:linear-gradient(135deg,#667eea,#764ba2); border:none;">+ Add Doctor</a>
+        </div>
+
+        <div class="doctor-table-wrap">
+            <table class="table table-bordered doctor-table">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Specialization</th>
+                        <th>Department</th>
+                        <th style="width:150px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var doctor in Model)
+                    {
+                        <tr>
+                            <td>@doctor.FullName</td>
+                            <td>@doctor.Specialization</td>
+                            <td>@doctor.Department?.Name</td>
+                            <td class="action-btns">
+                                <a asp-action="Details" asp-route-id="@doctor.DoctorId" class="btn btn-info btn-sm">Details</a>
+                                <a asp-action="Edit" asp-route-id="@doctor.DoctorId" class="btn btn-warning btn-sm">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@doctor.DoctorId" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        :root {
+            --header-height: 70px;
+            --footer-height: 60px;
+        }
+
+        .doctor-wrapper {
+            position: relative;
+            z-index: 1;
+            height: calc(100vh - var(--header-height) - var(--footer-height));
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 12px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .doctor-bg-fixed {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-height);
+            background-image: url('@Url.Content("~/images/dept.png")');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        .doctor-bg-overlay {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-height);
+            background: rgba(255,255,255,0.25);
+            z-index: 0;
+        }
+
+        .doctor-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 700px;
+            height: 80%;
+            background: rgba(255,255,255,0.96);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(14,30,37,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .doctor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+            .doctor-header h2 {
+                font-size: 1.4rem;
+                margin: 0;
+                color: #4b6cb7;
+            }
+
+        .dept-table-wrap {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 250px; /* Adjust this value as needed */
+            border-radius: 6px;
+        }
+
+
+        .doctor-table {
+            font-size: 0.8rem;
+        }
+
+            .doctor-table th,
+            .doctor-table td {
+                padding: 4px 8px;
+                line-height: 1.2;
+                vertical-align: middle;
+            }
+
+            .doctor-table thead th {
+                background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+                color: #fff;
+                position: sticky;
+                top: 0;
+                z-index: 3;
+                font-size: 0.85rem;
+                padding: 6px 8px;
+            }
+
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+            .action-btns .btn {
+                font-size: 0.75rem;
+                padding: 3px 6px;
+            }
+    </style>
+}
