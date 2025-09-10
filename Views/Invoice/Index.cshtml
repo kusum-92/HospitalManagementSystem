@@ -40,6 +40,13 @@
                 {
                     <a asp-action="MarkAsPaid" asp-route-id="@invoice.InvoiceId" class="btn btn-success btn-sm">Mark as Paid</a>
                 }
+                @if (invoice.IsPaid)
+                {
+                    <form asp-action="MarkAsUnpaid" asp-route-id="@invoice.InvoiceId" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning btn-sm">Mark as Unpaid</button>
+                    </form>
+                }
             </td>
         </tr>
     }

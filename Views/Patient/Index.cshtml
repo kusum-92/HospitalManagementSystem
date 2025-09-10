@@ -1,63 +1,177 @@
 ﻿@model IEnumerable<HospitalManagementSystem.Models.Patient>
 
 @{
-    ViewData["Title"] = "Patient List";
+    ViewData["Title"] = "Patients";
 }
 
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary"><i class="bi bi-people-fill me-2"></i>Patients</h1>
-        <a asp-action="Create" class="btn btn-success shadow-sm">
-            <i class="bi bi-person-plus-fill me-1"></i> Add Patient
-        </a>
-    </div>
+@section Styles {
+    <style>
+        :root {
+            --header-height: 70px;
+            --footer-height: 60px;
+        }
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Patient Records</h5>
+        /* Wrapper layout */
+        .patient-wrapper {
+            position: relative;
+            z-index: 1;
+            height: calc(100vh - var(--header-height) - var(--footer-height));
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 12px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .patient-bg-fixed {
+            content: "";
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-height);
+            background-image: url('@Url.Content("~/images/dept.png")');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        .patient-bg-overlay {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-height);
+            background: rgba(255,255,255,0.25);
+            z-index: 0;
+        }
+
+        .patient-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 750px;
+            height: 80%;
+            background: rgba(255,255,255,0.96);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(14,30,37,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .patient-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+            .patient-header h2 {
+                font-size: 1.4rem;
+                margin: 0;
+                color: #4b6cb7;
+            }
+
+        .patient-table-wrap {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 250px;
+            border-radius: 6px;
+        }
+
+        /* Compact table */
+        .patient-table {
+            font-size: 0.8rem;
+        }
+
+            .patient-table th,
+            .patient-table td {
+                padding: 4px 8px;
+                line-height: 1.2;
+                vertical-align: middle;
+            }
+
+            .patient-table thead th {
+                background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+                color: #fff;
+                position: sticky;
+                top: 0;
+                z-index: 3;
+                font-size: 0.85rem;
+                padding: 6px 8px;
+            }
+
+        /* Action buttons */
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+            .action-btns .btn {
+                font-size: 0.75rem;
+                padding: 3px 6px;
+            }
+    </style>
+}
+
+<!-- fixed bg elements -->
+<div class="patient-bg-fixed" aria-hidden="true"></div>
+<div class="patient-bg-overlay" aria-hidden="true"></div>
+
+<div class="patient-wrapper">
+    <div class="patient-card">
+        <div class="patient-header">
+            <div>
+                <h2>Patients</h2>
+                <div class="text-muted">Manage hospital patient records</div>
+            </div>
+
+            <div>
+                <a asp-action="Create" class="btn btn-primary btn-lg" style="background:linear-gradient(135deg,#667eea,#764ba2); border:none;">
+                    + ADD PATIENT
+                </a>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <table class="table table-hover table-striped mb-0">
-                <thead class="table-light">
+
+        <div class="patient-table-wrap">
+            <table class="table table-hover patient-table mb-0">
+                <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>NAME</th>
                         <th>DOB</th>
-                        <th>Gender</th>
-                        <th>Contact</th>
-                        <th style="width: 140px;">Actions</th>
+                        <th>GENDER</th>
+                        <th>CONTACT</th>
+                        <th style="width:200px; text-align:center;">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!Model.Any())
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                No patients found. Please add some.
-                            </td>
-                        </tr>
-                    }
-                    else
+                    @if (Model != null && Model.Any())
                     {
                         foreach (var patient in Model)
                         {
                             <tr>
-                                <td>@patient.FullName</td>
-                                <td>@patient.DOB.ToString("dd MMM yyyy")</td>
-                                <td>@patient.Gender</td>
-                                <td>@patient.ContactNumber</td>
-                                <td>
-                                    <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-sm btn-info me-1" title="View Details">
-                                        <i class="bi bi-eye">Details</i>
-                                    </a>
-                                    <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning me-1" title="Edit Patient">
-                                        <i class="bi bi-pencil-square">Edit</i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@patient.Id" class="btn btn-sm btn-danger" title="Delete Patient">
-                                        <i class="bi bi-trash">Delete</i>
-                                    </a>
+                                <td class="align-middle">@patient.FullName</td>
+                                <td class="align-middle">@patient.DOB.ToString("dd MMM yyyy")</td>
+                                <td class="align-middle">@patient.Gender</td>
+                                <td class="align-middle">@patient.ContactNumber</td>
+                                <td class="align-middle text-center">
+                                    <div class="action-btns">
+                                        <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-info btn-sm">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-warning btn-sm">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@patient.Id" class="btn btn-danger btn-sm">Delete</a>
+                                    </div>
                                 </td>
                             </tr>
                         }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No patients found.</td>
+                        </tr>
                     }
                 </tbody>
             </table>

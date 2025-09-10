@@ -13,5 +13,6 @@ namespace HospitalManagementSystem.Repository.Interfaces
         Task AddAsync(Invoice invoice);
         Task MarkAsPaidAsync(int invoiceId);
         Task SaveAsync();
+        void Update(Invoice invoice);
     }
 }

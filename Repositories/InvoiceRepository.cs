@@ -69,5 +69,10 @@ namespace HospitalManagementSystem.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public void Update(Invoice invoice)
+        {
+            _context.Invoices.Update(invoice);
+        }
     }
 }

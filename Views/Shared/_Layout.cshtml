@@ -1,127 +1,139 @@
-﻿<!DOCTYPE html>
+﻿@{
+    // detect Home/Index so we can render home without the .container (full-bleed)
+    var currentController = (string)ViewContext.RouteData.Values["controller"] ?? "";
+    var currentAction = (string)ViewContext.RouteData.Values["action"] ?? "";
+    var isHomeIndex = string.Equals(currentController, "Home", System.StringComparison.OrdinalIgnoreCase)
+                      && string.Equals(currentAction, "Index", System.StringComparison.OrdinalIgnoreCase);
+
+    Layout = null;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HospitalManagementSystem</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalManagementSystem.styles.css" asp-append-version="true" />
 
+    @await RenderSectionAsync("Styles", required: false)
+
     <style>
-        /* Navbar brand and menu item spacing */
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 1.6rem;
-            padding-left: 15px;
-            padding-right: 30px;
+        :root {
+            --header-height: 70px;
+            --footer-height: 60px;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            padding-top: var(--header-height);
+            padding-bottom: var(--footer-height);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            z-index: 1100;
+        }
+
+        .navbar {
+            height: 100%;
+            background-color: #007bff !important;
+            margin-bottom: 0;
+        }
+
+        .navbar .container-fluid {
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 10px; /* space between icon and text */
         }
 
-            /* Example if you add an icon inside the brand */
-            .navbar-brand i {
-                font-size: 1.8rem;
-            }
-
-        /* Add horizontal margin between nav items */
-        .navbar-nav .nav-item {
-            margin-left: 15px;
-            margin-right: 15px;
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 600;
         }
 
-        /* Nav link styling */
-        .navbar-nav .nav-link {
-            font-size: 1.1rem;
-            padding: 0.5rem 0.8rem;
-            white-space: nowrap; /* prevent wrapping */
-            color: white !important; /* ensure text color is white */
-        }
-
-        /* Navbar background color and padding */
-        .navbar {
-            padding-top: 0.7rem;
-            padding-bottom: 0.7rem;
-            background-color: #007bff; /* Bootstrap primary blue */
-        }
-
-        /* Navbar toggler button color for mobile */
-        .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .navbar-toggler-icon {
-            filter: brightness(0) invert(1);
-        }
-
-        /* Footer styling */
         footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-height);
+            z-index: 1100;
             background-color: #f8f9fa;
-            padding: 1rem 0;
-            font-size: 0.9rem;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            color: #6c757d;
+            font-size: 0.9rem;
+            color: #333;
         }
 
-        /* Container padding for main content */
-        main {
-            padding-top: 20px;
-            padding-bottom: 20px;
+        main[role="main"] {
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        .no-top-gap {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
         }
     </style>
 </head>
 <body>
+    <!-- HEADER (fixed) -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm border-bottom box-shadow">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">
-                    <!-- Optional icon -->
-                    <!--<i class="bi bi-hospital"></i>-->
-                    HospitalManagementSystem
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HospitalManagementSystem</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
-                    <ul class="navbar-nav ms-auto align-items-center">
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Doctor" asp-action="Index">Doctors</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Patient" asp-action="Index">Patients</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Invoice" asp-action="Index">Invoices</a>
-                        </li>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Departments</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="Index">Doctors</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Patient" asp-action="Index">Patients</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Invoice" asp-action="Index">Invoices</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    @if (isHomeIndex)
+    {
+        <!-- Home page: render body full-bleed (no container) -->
+        <main role="main" class="no-top-gap">
             @RenderBody()
         </main>
-    </div>
+    }
+    else
+    {
+        <!-- Other pages: keep normal container so existing pages are unchanged -->
+        <main role="main" class="container">
+            @RenderBody()
+        </main>
+    }
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels😁
-        </div>
+    <!-- FOOTER (fixed & centered) -->
+    <footer>
+        &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels 😁
     </footer>
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

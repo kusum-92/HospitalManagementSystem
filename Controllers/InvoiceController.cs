@@ -66,5 +66,22 @@ namespace HospitalManagementSystem.Controllers
             await _invoiceRepository.MarkAsPaidAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+        // POST: Invoice/MarkAsUnpaid/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsUnpaid(int id)
+        {
+            var invoice = await _invoiceRepository.GetByIdAsync(id);
+            if (invoice == null)
+                return NotFound();
+
+            invoice.IsPaid = false;
+            _invoiceRepository.Update(invoice);
+            await _invoiceRepository.SaveAsync();
+
+            // Redirect back to the referring page or a default page
+            return RedirectToAction(nameof(ByPatient), new { patientId = invoice.PatientId });
+        }
     }
 }
