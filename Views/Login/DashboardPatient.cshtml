@@ -1,0 +1,12 @@
+﻿@model HospitalManagementSystem.Models.Patient
+
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<h2>Welcome, @Model.FullName</h2>
+<p><strong>DOB:</strong> @Model.DOB.ToString("dd/MM/yyyy")</p>
+<p><strong>Gender:</strong> @Model.Gender</p>
+<p><strong>Contact:</strong> @Model.ContactNumber</p>
+
+<a asp-action="Logout" class="btn btn-danger">Logout</a>

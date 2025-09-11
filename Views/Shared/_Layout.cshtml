@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -319,6 +321,7 @@
             .theme-toggle { --size:38px; border-radius:12px; }
         }
     </style>
+
 </head>
 <body>
     <div class="global-bg-overlay" aria-hidden="true"></div>
@@ -376,6 +379,61 @@
                             <li class="nav-item">
                                 <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     <button type="submit" class="btn-logout nav-link">Logout</button>
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3" style="background-color: #007bff;">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    HospitalManagementSystem
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                        {
+                            @* Admin Menu *@
+                            @if (HttpContextAccessor.HttpContext.User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Department" asp-action="Index">Departments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Doctor" asp-action="Index">Doctors</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Patient" asp-action="Index">Patients</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Appointment" asp-action="Index">Appointments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Invoice" asp-action="Index">Invoices</a></li>
+                            }
+                            @* Doctor Menu *@
+                            else if (HttpContextAccessor.HttpContext.User.IsInRole("Doctor"))
+                            {
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Appointment" asp-action="Index">My Appointments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Patient" asp-action="Index">My Patients</a></li>
+                            }
+                            @* Patient Menu *@
+                            else if (HttpContextAccessor.HttpContext.User.IsInRole("Patient"))
+                            {
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Appointment" asp-action="Index">My Appointments</a></li>
+                                <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Invoice" asp-action="Index">My Invoices</a></li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item mx-2"><a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a></li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="navbar-text text-light me-3">
+                                    Hello, @HttpContextAccessor.HttpContext.User.Identity.Name!
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-action="Logout" asp-controller="Login" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">Logout</button>
                                 </form>
                             </li>
                         }
@@ -409,6 +467,29 @@
                                 </span>
                             </button>
                         </li>
+                            @* Login Dropdown *@
+                            <li class="nav-item dropdown mx-2">
+                                <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Login
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="loginDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="LoginPatient">Login as Patient</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="LoginDoctor">Login as Doctor</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Login">Login as Admin</a></li>
+                                </ul>
+                            </li>
+
+                            @* Register Dropdown *@
+                            <li class="nav-item dropdown mx-2">
+                                <a class="btn btn-light btn-sm dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Register
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="registerDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="RegisterPatient">Register as Patient</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Login" asp-action="RegisterDoctor">Register as Doctor</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -436,6 +517,9 @@
         <div>
             &copy; @DateTime.UtcNow.Year - HospitalManagementSystem • Made by Razor Rebels 😁
             <span style="display:inline-block;margin-left:8px;opacity:.7;">All rights reserved.</span>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; @DateTime.Now.Year - HospitalManagementSystem - Made by Razor Rebels 😁
         </div>
     </footer>
 

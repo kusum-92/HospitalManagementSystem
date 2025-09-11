@@ -15,12 +15,13 @@ namespace HospitalManagementSystem.Models
         [Required]
         public string ContactNumber { get; set; }
 
-        public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<Appointment?> Appointments { get; set; }
 
         public ICollection<Invoice> Invoices { get; set; }
         // Patient.cs
         public string IdentityUserId { get; set; }  // store IdentityUser.Id (string)
 
+        public ICollection<Invoice?> Invoices { get; set; }
     }
 
 }

@@ -6,11 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Controllers
 {
     [Authorize]
+    [Authorize(Roles = "Admin")]
     public class DoctorController : Controller
     {
         private readonly IDoctorRepository _doctorRepo;

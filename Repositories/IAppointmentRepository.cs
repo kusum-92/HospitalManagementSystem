@@ -6,6 +6,7 @@ namespace HospitalManagementSystem.Repository.Interfaces
     {
         Task<IEnumerable<Appointment>> GetAllAsync();
         Task<Appointment?> GetByIdAsync(int id);
+        Task<IEnumerable<Appointment>> GetByPatientIdAsync(int patientId); // NEW
         Task AddAsync(Appointment appointment);
         void Update(Appointment appointment);
         void Delete(Appointment appointment);
