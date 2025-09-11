@@ -1,0 +1,42 @@
+﻿@model HospitalManagementSystem.Models.Invoice
+
+@{
+    ViewData["Title"] = "Edit Invoice";
+}
+
+<h2>Edit Invoice</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="InvoiceId" />
+
+    <div class="form-group">
+        <label asp-for="DateIssued"></label>
+        <input asp-for="DateIssued" class="form-control" type="date" />
+        <span asp-validation-for="DateIssued" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Amount"></label>
+        <input asp-for="Amount" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Amount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IsPaid"></label>
+        <input asp-for="IsPaid" type="checkbox" />
+        <span asp-validation-for="IsPaid" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Patient</label>
+        <select asp-for="PatientId" class="form-control" asp-items="ViewBag.PatientId"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Appointment</label>
+        <select asp-for="AppointmentId" class="form-control" asp-items="ViewBag.AppointmentId"></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
