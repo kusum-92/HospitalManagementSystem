@@ -195,7 +195,7 @@ namespace HospitalManagementSystem.Controllers
                 .Distinct()
                 .ToList();
 
-            return View("~/Views/Patient/Index.cshtml", patients); // reuse existing view
+            return View("MyPatients", patients); // reuse existing view
         }
 
         private async Task<Doctor> GetLoggedInDoctorAsync()

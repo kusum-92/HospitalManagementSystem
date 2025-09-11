@@ -7,9 +7,7 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-primary"><i class="bi bi-people-fill me-2"></i>Patients</h1>
-        <a asp-action="Create" class="btn btn-success shadow-sm">
-            <i class="bi bi-person-plus-fill me-1"></i> Add Patient
-        </a>
+        
     </div>
 
     <div class="card shadow-sm">
@@ -49,9 +47,9 @@
                                     <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-sm btn-info me-1" title="View Details">
                                         <i class="bi bi-eye">Details</i>
                                     </a>
-                                    <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning me-1" title="Edit Patient">
+                                    @* <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning me-1" title="Edit Patient">
                                         <i class="bi bi-pencil-square">Edit</i>
-                                    </a>
+                                    </a> *@
                                     <a asp-action="Delete" asp-route-id="@patient.Id" class="btn btn-sm btn-danger" title="Delete Patient">
                                         <i class="bi bi-trash">Delete</i>
                                     </a>

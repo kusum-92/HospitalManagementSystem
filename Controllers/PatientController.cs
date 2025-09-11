@@ -109,7 +109,7 @@ namespace HospitalManagementSystem.Controllers
             if (id != patient.Id)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
                 return View(patient);
 
             _patientRepo.Update(patient);

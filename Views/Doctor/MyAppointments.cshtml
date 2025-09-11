@@ -14,7 +14,6 @@
                 <td>@a.AppointmentDate.ToString("dd MMM yyyy hh:mm tt")</td>
                 <td>@a.Patient?.FullName</td>
                 <td>@(a.Invoice?.IsPaid == true ? "Paid" : "Unpaid")</td>
-                <td><a asp-action="AppointmentDetails" asp-route-id="@a.AppointmentId">Details</a></td>
             </tr>
         }
     </tbody>

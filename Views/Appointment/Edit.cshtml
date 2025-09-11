@@ -1,9 +1,12 @@
 ﻿@model HospitalManagementSystem.Models.Appointment
+@using System.Linq
 
 @{
     ViewData["Title"] = "Edit Appointment";
-    var patients = ViewBag.Patients as IEnumerable<HospitalManagementSystem.Models.Patient>;
-    var doctors = ViewBag.Doctors as IEnumerable<HospitalManagementSystem.Models.Doctor>;
+    var patients = (ViewBag.Patients as IEnumerable<HospitalManagementSystem.Models.Patient>) 
+                   ?? Enumerable.Empty<HospitalManagementSystem.Models.Patient>();
+    var doctors = (ViewBag.Doctors as IEnumerable<HospitalManagementSystem.Models.Doctor>) 
+                  ?? Enumerable.Empty<HospitalManagementSystem.Models.Doctor>();
 }
 
 <div class="container mt-5">
@@ -17,27 +20,25 @@
 
                 @if (User.IsInRole("Admin"))
                 {
-                    <!-- Admin can pick patient -->
                     <div class="mb-3">
                         <label asp-for="PatientId" class="form-label">Patient</label>
                         <select asp-for="PatientId" class="form-select"
-                                asp-items="@(new SelectList(patients, "PatientId", "FullName"))">
-                            <option disabled selected>-- Select Patient --</option>
+                                asp-items="@(new SelectList(patients, "Id", "FullName", Model.PatientId))">
+                            <option value="">-- Select Patient --</option>
                         </select>
                         <span asp-validation-for="PatientId" class="text-danger"></span>
                     </div>
                 }
                 else if (User.IsInRole("Patient"))
                 {
-                    <!-- Patients cannot change PatientId -->
                     <input type="hidden" asp-for="PatientId" />
                 }
 
                 <div class="mb-3">
                     <label asp-for="DoctorId" class="form-label">Doctor</label>
                     <select asp-for="DoctorId" class="form-select"
-                            asp-items="@(new SelectList(doctors, "DoctorId", "FullName"))">
-                        <option disabled selected>-- Select Doctor --</option>
+                            asp-items="@(new SelectList(doctors, "DoctorId", "FullName", Model.DoctorId))">
+                        <option value="">-- Select Doctor --</option>
                     </select>
                     <span asp-validation-for="DoctorId" class="text-danger"></span>
                 </div>
@@ -59,7 +60,6 @@
                 {
                     <a asp-action="Index" class="btn btn-secondary">Back to All Appointments</a>
                 }
-
             </form>
         </div>
     </div>

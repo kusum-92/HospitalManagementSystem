@@ -64,6 +64,9 @@
 
                 <div class="navbar-collapse collapse justify-content-end">
                     <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Department" asp-action="Index">Department</a>
+                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))

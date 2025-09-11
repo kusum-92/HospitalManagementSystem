@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace HospitalManagementSystem.Controllers
 {
@@ -37,11 +40,27 @@ namespace HospitalManagementSystem.Controllers
         }
 
         // GET: /Appointment/Details/5
+        [Authorize(Roles = "Admin,Doctor,Patient")]
         public async Task<IActionResult> Details(int id)
         {
             var appointment = await _appointmentRepo.GetByIdAsync(id);
             if (appointment == null)
                 return NotFound();
+
+            if (User.IsInRole("Doctor"))
+            {
+                var userId = _userManager.GetUserId(User);
+                var doctor = await _doctorRepo.GetByIdentityUserIdAsync(userId);
+                if (doctor == null || appointment.DoctorId != doctor.DoctorId)
+                    return Forbid();
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                var userId = _userManager.GetUserId(User);
+                var patient = await _patientRepo.GetByIdentityUserIdAsync(userId);
+                if (patient == null || appointment.PatientId != patient.Id)
+                    return Forbid();
+            }
 
             return View(appointment);
         }
@@ -86,7 +105,6 @@ namespace HospitalManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-       
         // GET: /Appointment/Edit/5
         [Authorize(Roles = "Admin,Patient")]
         public async Task<IActionResult> Edit(int id)
@@ -98,22 +116,19 @@ namespace HospitalManagementSystem.Controllers
             {
                 var userId = _userManager.GetUserId(User);
                 var patient = await _patientRepo.GetByIdentityUserIdAsync(userId);
-
-                if (appointment.PatientId != patient.Id)
+                if (patient == null || appointment.PatientId != patient.Id)
                     return Forbid();
 
-                // Patients cannot select other patients
                 ViewBag.Doctors = await _doctorRepo.GetAllAsync();
                 return View(appointment);
             }
 
-            // Admin flow
             ViewBag.Patients = await _patientRepo.GetAllAsync();
             ViewBag.Doctors = await _doctorRepo.GetAllAsync();
             return View(appointment);
         }
 
-
+        [Authorize(Roles = "Admin,Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Appointment appointment)
@@ -123,8 +138,15 @@ namespace HospitalManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                ViewBag.Patients = await _patientRepo.GetAllAsync();
-                ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                if (User.IsInRole("Patient"))
+                {
+                    ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                }
+                else
+                {
+                    ViewBag.Patients = await _patientRepo.GetAllAsync();
+                    ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                }
                 return View(appointment);
             }
 
@@ -144,7 +166,7 @@ namespace HospitalManagementSystem.Controllers
                 }
             }
 
-            // 🔹 Redirect based on role
+            // Redirect based on role
             if (User.IsInRole("Patient"))
                 return RedirectToAction("MyAppointments", "Patient");
 
@@ -173,7 +195,7 @@ namespace HospitalManagementSystem.Controllers
             _appointmentRepo.Delete(appointment);
             await _appointmentRepo.SaveAsync();
 
-            // 🔹 Redirect based on role
+            // Redirect based on role
             if (User.IsInRole("Patient"))
                 return RedirectToAction("MyAppointments", "Patient");
 
