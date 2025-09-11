@@ -4,32 +4,180 @@
     ViewData["Title"] = "Departments";
 }
 
-<h2>Departments</h2>
+@section PageBackground {
+    <!-- Moved background layers here so they sit behind container & not masked by content shell -->
+    <div class="department-bg-fixed" aria-hidden="true"></div>
+    <div class="department-bg-overlay" aria-hidden="true"></div>
+}
 
-@* <p> *@
-    @* <a asp-action="Create" class="btn btn-primary">Create New Department</a> *@
-@* </p> *@
 
-<table class="table table-striped table-bordered">
-    <thead class="table-primary">
-        <tr>
-            <th>Department Name</th>
-            <th>Number of Doctors</th>
-            <th style="width:180px;">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var dept in Model)
+<style>
+    :root {
+        --primary-color:#5b8df9;
+        --secondary-color:#7b5cfb;
+        --primary-grad:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+        --shadow-dark:rgba(20,30,40,0.18);
+        --muted-text:#535e6c;
+        --card-bg:rgba(255,255,255,0.88);
+        --text-color:#243041;
+        --header-height:70px;
+        --footer-height:64px;
+    }
+
+    .department-bg-fixed {
+        position:fixed;
+        top:var(--header-height);
+        left:0; right:0;
+        bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")');
+        background-size:cover;
+        background-position:center;
+        z-index:0;
+    }
+    .department-bg-overlay {
+        position:fixed;
+        top:var(--header-height);
+        left:0; right:0;
+        bottom:var(--footer-height);
+        background:linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+        z-index:1;
+        pointer-events:none;
+    }
+
+    .department-wrapper {
+        position:relative;
+        z-index:2;
+        min-height:calc(100vh - var(--header-height) - var(--footer-height));
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+        padding:24px 14px 32px;
+        box-sizing:border-box;
+    }
+
+    .dept-card-container {
+        display:flex;
+        flex-wrap:wrap;
+        gap:26px;
+        justify-content:center;
+        width:100%;
+        max-width:1150px;
+    }
+
+    .dept-card {
+        background:var(--card-bg);
+        border-radius:18px;
+        box-shadow:0 16px 42px var(--shadow-dark);
+        backdrop-filter:blur(5px);
+        -webkit-backdrop-filter:blur(5px);
+        padding:26px 24px 30px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+        transition:transform .25s ease, box-shadow .25s ease;
+        flex:1 1 300px;
+        max-width:320px;
+        position:relative;
+        overflow:hidden;
+    }
+
+    .dept-card::before {
+        content:"";
+        position:absolute;
+        inset:0;
+        background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.65), transparent 60%);
+        opacity:0;
+        transition:opacity .35s;
+        pointer-events:none;
+    }
+
+    .dept-card:hover {
+        transform:translateY(-10px);
+        box-shadow:0 26px 60px rgba(20,30,40,0.28);
+    }
+    .dept-card:hover::before { opacity:1; }
+
+    .dept-card .icon {
+        width:80px; height:80px;
+        background:var(--primary-grad);
+        -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 000-18C8.5 3 3 8.5 3 12a9 9 0 009 9zM9 12a3 3 0 11-6 0 3 3 0 016 0zm9-3a3 3 0 100-6 3 3 0 000 6zM21 12a3 3 0 11-6 0 3 3 0 016 0zM12 3a3 3 0 11-6 0 3 3 0 016 0zM12 21a3 3 0 100-6 3 3 0 000 6z" /></svg>') no-repeat center;
+        mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 000-18C8.5 3 3 8.5 3 12a9 9 0 009 9zM9 12a3 3 0 11-6 0 3 3 0 061 0zm9-3a3 3 0 100-6 3 3 0 006 0zM21 12a3 3 0 11-6 0 3 3 0 006 0zM12 3a3 3 0 11-6 0 3 3 0 061 0zM12 21a3 3 0 100-6 3 3 0 000 6z" /></svg>') no-repeat center;
+        -webkit-mask-size:80%;
+        mask-size:80%;
+        margin-bottom:22px;
+    }
+
+    .dept-card h3 {
+        font-size:1.35rem;
+        font-weight:700;
+        color:var(--text-color);
+        margin-bottom:14px;
+    }
+
+    .dept-card p {
+        color:var(--muted-text);
+        font-size:.98rem;
+        line-height:1.55;
+        flex:1;
+        margin-bottom:26px;
+    }
+
+    .read-more-btn {
+        display:inline-block;
+        padding:12px 26px;
+        background:linear-gradient(90deg,#17c0b5,#3aa0ff);
+        color:#fff;
+        border-radius:999px;
+        font-weight:600;
+        font-size:.85rem;
+        letter-spacing:.4px;
+        text-decoration:none;
+        box-shadow:0 8px 22px rgba(56,160,255,0.25);
+        transition:transform .25s, box-shadow .25s, filter .25s;
+    }
+    .read-more-btn:hover {
+        transform:translateY(-3px);
+        box-shadow:0 14px 36px rgba(56,160,255,0.35);
+        filter:brightness(.97);
+    }
+
+    .no-departments {
+        width:100%;
+        text-align:center;
+        color:var(--muted-text);
+        font-size:1.15rem;
+        padding-top:60px;
+    }
+
+    @@media (max-width: 768px) {
+        .department-wrapper { padding:20px 10px 30px; }
+        .dept-card-container { gap:22px; }
+        .dept-card { max-width:92%; }
+    }
+</style>
+
+<div class="department-wrapper">
+    <div class="dept-card-container">
+        @if (Model != null && Model.Any())
         {
-            <tr>
-                <td>@dept.Name</td>
-                <td>@(dept.Doctors?.Count() ?? 0)</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@dept.DepartmentID" class="btn btn-info btn-sm me-1">Details</a>
-                    @* <a asp-action="Edit" asp-route-id="@dept.DepartmentID" class="btn btn-warning btn-sm me-1">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@dept.DepartmentID" class="btn btn-danger btn-sm">Delete</a> *@
-                </td>
-            </tr>
+            foreach (var dept in Model)
+            {
+                <div class="dept-card">
+                    <div class="icon" role="img" aria-label="Department icon"></div>
+                    <h3>@dept.Name</h3>
+                    <p>
+                        The @dept.Name department provides specialized care with a focus on cutting-edge treatments and patient well-being.
+                    </p>
+                    <a asp-action="Details" asp-route-id="@dept.DepartmentID" class="read-more-btn">Read more</a>
+                </div>
+            }
         }
-    </tbody>
-</table>
+        else
+        {
+            <div class="no-departments">
+                No departments found. Please add new departments to get started.
+            </div>
+        }
+    </div>
+</div>

@@ -2,19 +2,221 @@
 @{
     ViewData["Title"] = "Invoice Details";
 }
-<h2>Invoice Details</h2>
-<dl class="row">
-    <dt class="col-sm-2">Invoice #</dt>
-    <dd class="col-sm-10">@Model.InvoiceId</dd>
-    <dt class="col-sm-2">Date Issued</dt>
-    <dd class="col-sm-10">@Model.DateIssued.ToShortDateString()</dd>
-    <dt class="col-sm-2">Amount</dt>
-    <dd class="col-sm-10">@Model.Amount.ToString("C")</dd>
-    <dt class="col-sm-2">Paid</dt>
-    <dd class="col-sm-10">@Model.IsPaid</dd>
-    <dt class="col-sm-2">Patient</dt>
-    <dd class="col-sm-10">@Model.Patient?.FullName</dd>
-    <dt class="col-sm-2">Appointment</dt>
-    <dd class="col-sm-10">@Model.AppointmentId</dd>
-</dl>
-<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+@section PageBackground {
+    <div class="invoice-bg-fixed" aria-hidden="true"></div>
+    <div class="invoice-bg-overlay" aria-hidden="true"></div>
+}
+
+<style>
+    :root {
+        --header-height: 70px;
+        --footer-height: 64px;
+        --primary: #5b8df9;
+        --secondary: #7b5cfb;
+        --accent: #17c0b5;
+        --grad-main: linear-gradient(135deg,#5b8df9,#7b5cfb);
+        --panel-bg: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.80));
+        --muted: #5c6672;
+        --text: #243041;
+    }
+
+    [data-theme="dark"] :root {
+        --panel-bg: linear-gradient(145deg,rgba(34,46,60,0.94),rgba(26,36,48,0.90));
+        --muted: #c2ced8;
+        --text: #f3f7fa;
+    }
+
+    .invoice-bg-fixed, .invoice-bg-overlay {
+    }
+
+    .details-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 42px 10px 70px;
+    }
+
+    .panel {
+        background: var(--panel-bg);
+        border: 1px solid rgba(120,140,170,0.30);
+        border-radius: 36px;
+        padding: 60px 66px 66px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 34px 88px rgba(40,70,140,0.28);
+        position: relative;
+        overflow: hidden;
+        animation: dFade .55s ease;
+    }
+
+    [data-theme="dark"] .panel {
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 34px 90px rgba(0,0,0,0.72);
+    }
+
+    h1.title {
+        margin: 0 0 26px;
+        font-size: 2.05rem;
+        font-weight: 700;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    [data-theme="dark"] h1.title {
+        background: linear-gradient(90deg,#d5e6ff,#eddfff);
+        text-shadow: 0 0 6px rgba(255,255,255,.35),0 2px 10px rgba(0,0,0,.65);
+    }
+
+    dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        row-gap: 18px;
+        column-gap: 28px;
+    }
+
+    dt {
+        font-weight: 600;
+        color: #2a3950;
+        letter-spacing: .45px;
+    }
+
+    dd {
+        margin: 0;
+        color: #455066;
+    }
+
+    [data-theme="dark"] dt {
+        color: #f0f4f9;
+    }
+
+    [data-theme="dark"] dd {
+        color: #d5dee6;
+    }
+
+    .badge-paid, .badge-unpaid {
+        padding: 6px 14px;
+        font-size: .63rem;
+        font-weight: 600;
+        letter-spacing: .55px;
+        border-radius: 999px;
+        color: #fff;
+    }
+
+    .badge-paid {
+        background: linear-gradient(135deg,#17c0b5,#3aa0ff);
+        box-shadow: 0 8px 24px rgba(56,160,255,0.38);
+    }
+
+    .badge-unpaid {
+        background: linear-gradient(135deg,#ffb347,#ff7b36);
+        box-shadow: 0 8px 24px rgba(255,140,70,0.42);
+    }
+
+    .actions {
+        margin-top: 44px;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .btn-soft {
+        background: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(236,242,255,0.90));
+        border: 1px solid rgba(120,140,170,0.35);
+        color: #243041;
+        border-radius: 18px;
+        padding: 12px 26px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: .75rem;
+        letter-spacing: .55px;
+        transition: .35s;
+        display: inline-flex;
+        gap: .45rem;
+        align-items: center;
+    }
+
+        .btn-soft:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(145deg,rgba(255,255,255,0.97),rgba(241,246,255,0.97));
+        }
+
+    [data-theme="dark"] .btn-soft {
+        background: linear-gradient(145deg,rgba(46,60,78,0.92),rgba(38,50,66,0.90));
+        border: 1px solid rgba(255,255,255,0.14);
+        color: #eef4f8;
+    }
+
+        [data-theme="dark"] .btn-soft:hover {
+            background: linear-gradient(145deg,rgba(56,70,90,0.96),rgba(46,60,78,0.94));
+        }
+
+    @@keyframes dFade {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width:760px) {
+        .panel {
+            padding: 50px 42px 56px;
+        }
+
+        dl {
+            grid-template-columns: 160px 1fr;
+        }
+    }
+</style>
+
+<div class="details-wrapper">
+    <div class="panel">
+        <h1 class="title">Invoice Details</h1>
+        <dl>
+            <dt>Invoice #</dt>
+            <dd>@Model.InvoiceId</dd>
+
+            <dt>Date Issued</dt>
+            <dd>@Model.DateIssued.ToShortDateString()</dd>
+
+            <dt>Amount</dt>
+            <dd>@Model.Amount.ToString("C")</dd>
+
+            <dt>Status</dt>
+            <dd>
+                @if (Model.IsPaid)
+                {
+                    <span class="badge-paid">Paid</span>
+                }
+                else
+                {
+
+                    <span class="badge-unpaid">Unpaid</span>
+                }
+            </dd>
+
+            <dt>Patient</dt>
+            <dd>@Model.Patient?.FullName</dd>
+
+            <dt>Appointment</dt>
+            <dd>@Model.AppointmentId</dd>
+        </dl>
+
+        <div class="actions">
+            <a asp-action="Index" class="btn-soft"><i class="bi bi-arrow-left-circle"></i> Back</a>
+            @if (!Model.IsPaid)
+            {
+                <a asp-action="MarkAsPaid" asp-route-id="@Model.InvoiceId" class="btn-soft" style="background:linear-gradient(145deg,rgba(23,192,181,0.92),rgba(58,160,255,0.90)); color:#fff; border:1px solid rgba(255,255,255,0.20);">
+                    <i class="bi bi-cash-coin"></i> Mark Paid
+                </a>
+            }
+        </div>
+    </div>
+</div>

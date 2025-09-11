@@ -4,32 +4,193 @@
     ViewData["Title"] = "Department Details";
 }
 
-<h1>Department Details</h1>
-<div>
-    <h4>Department</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Name</dt>
-        <dd class="col-sm-10">@Model.Name</dd>
-        <dt class="col-sm-2">Doctors</dt>
-        <dd class="col-sm-10">
-            @if (Model.Doctors != null && Model.Doctors.Any())
-            {
-                <ul>
-                @foreach (var doc in Model.Doctors)
+@section PageBackground {
+    <div class="department-bg-fixed" aria-hidden="true"></div>
+    <div class="department-bg-overlay" aria-hidden="true"></div>
+}
+
+<style>
+    .details-wrapper {
+        position:relative;
+        z-index:2;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 8px 4px 42px;
+    }
+    .details-panel {
+        background: linear-gradient(145deg, rgba(255,255,255,0.86), rgba(255,255,255,0.74));
+        border: 1px solid rgba(120,140,170,0.25);
+        border-radius: 30px;
+        padding: 44px 50px 48px;
+        box-shadow: 0 22px 60px rgba(40,70,140,0.22);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        animation: fadeInDetails .55s ease;
+        position:relative;
+        overflow:hidden;
+    }
+    .details-panel::before {
+        content:"";
+        position:absolute;
+        width:420px;
+        height:420px;
+        right:-180px;
+        top:-160px;
+        background: radial-gradient(circle at 35% 40%, rgba(91,141,249,0.28), transparent 70%);
+        pointer-events:none;
+    }
+
+    h1.dept-title {
+        font-weight:700;
+        font-size:2.05rem;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip:text;
+        background-clip:text;
+        color:transparent;
+        margin-bottom:6px;
+    }
+    .subtitle { color:var(--muted-text); font-size:.92rem; margin-bottom:34px; }
+
+    dl {
+        margin:0;
+        display:grid;
+        grid-template-columns: 180px 1fr;
+        row-gap:18px;
+        column-gap:22px;
+    }
+    dt {
+        font-weight:600;
+        color:#2a3950;
+        letter-spacing:.4px;
+    }
+    dd { margin-bottom:0; color:#445366; }
+
+    .doctor-list {
+        list-style:none;
+        padding-left:0;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        margin:0;
+    }
+    .doctor-item {
+        background: rgba(255,255,255,0.65);
+        border:1px solid rgba(120,140,170,0.30);
+        border-radius:14px;
+        padding:12px 16px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-size:.9rem;
+        line-height:1.3;
+        position:relative;
+        transition: background .25s, transform .25s, box-shadow .3s;
+    }
+    .doctor-item::before {
+        content:"";
+        width:10px;
+        height:10px;
+        border-radius:50%;
+        background:linear-gradient(135deg,#5b8df9,#7b5cfb);
+        box-shadow:0 0 0 4px rgba(91,141,249,0.20);
+        flex-shrink:0;
+    }
+    .doctor-item:hover {
+        background: rgba(255,255,255,0.85);
+        transform: translateY(-3px);
+        box-shadow:0 10px 30px rgba(40,70,140,0.18);
+    }
+
+    .empty-note {
+        font-size:.9rem;
+        color:var(--muted-text);
+        font-style:italic;
+    }
+
+    .action-bar {
+        margin-top:36px;
+        display:flex;
+        gap:14px;
+        flex-wrap:wrap;
+    }
+    .btn-accent {
+        background: var(--accent-grad);
+        color:#fff;
+        border:none;
+        border-radius:16px;
+        padding:12px 28px;
+        font-weight:600;
+        letter-spacing:.4px;
+        box-shadow:0 12px 30px rgba(91,141,249,0.30);
+        transition: transform .25s, box-shadow .30s, filter .25s;
+    }
+    .btn-accent:hover { transform:translateY(-3px); box-shadow:0 20px 46px rgba(91,141,249,0.35); filter:brightness(.97); }
+
+    .btn-soft {
+        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(235,242,255,0.9));
+        border:1px solid rgba(120,140,170,0.35);
+        color:#243041;
+        border-radius:16px;
+        padding:12px 26px;
+        font-weight:600;
+        transition: transform .25s, background .25s;
+    }
+    .btn-soft:hover { background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(240,246,255,0.95)); transform: translateY(-2px); }
+
+    @@media (max-width: 720px) {
+        .details-panel { padding:34px 28px 44px; }
+        dl { grid-template-columns: 140px 1fr; row-gap:16px; }
+    }
+
+    @@keyframes fadeInDetails {
+        from { opacity:0; transform: translateY(14px); }
+        to { opacity:1; transform: translateY(0); }
+    }
+
+    .department-bg-fixed {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")');
+        background-size:cover; background-position:center; z-index:0;
+    }
+    .department-bg-overlay {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background:linear-gradient(to bottom, rgba(255,255,255,0.30), rgba(255,255,255,0.07));
+        z-index:1; pointer-events:none;
+    }
+</style>
+
+<div class="details-wrapper">
+    <div class="details-panel">
+        <h1 class="dept-title">Department Details</h1>
+        <div class="subtitle">Overview and assigned medical staff.</div>
+
+        <dl>
+            <dt>Name</dt>
+            <dd>@Model.Name</dd>
+
+            <dt>Doctors</dt>
+            <dd>
+                @if (Model.Doctors != null && Model.Doctors.Any())
                 {
-                    <li>@doc.FullName (@doc.Specialization)</li>
+                    <ul class="doctor-list">
+                        @foreach (var doc in Model.Doctors)
+                        {
+                            <li class="doctor-item">
+                                <span>@doc.FullName (@doc.Specialization)</span>
+                            </li>
+                        }
+                    </ul>
                 }
-                </ul>
-            }
-            else
-            {
-                <span>No doctors in this department.</span>
-            }
-        </dd>
-    </dl>
+                else
+                {
+                    <span class="empty-note">No doctors in this department.</span>
+                }
+            </dd>
+        </dl>
+
+        <div class="action-bar">
+            @* <a asp-action="Edit" asp-route-id="@Model.DepartmentID" class="btn-accent">Edit</a> *@
+            <a asp-action="Index" class="btn-soft">Back to List</a>
+        </div>
+    </div>
 </div>
-<p>
-    <a asp-action="Edit" asp-route-id="@Model.DepartmentID" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</p>

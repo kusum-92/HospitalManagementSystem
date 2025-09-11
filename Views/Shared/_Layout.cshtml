@@ -3,61 +3,335 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HospitalManagementSystem</title>
+    <title>@ViewData["Title"] - Razor Hospital</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalManagementSystem.styles.css" asp-append-version="true" />
 
     <style>
-        body {
-            background-color: #f0f2f5;
+        :root {
+            --header-height: 70px;
+            --footer-height: 64px;
+
+            --primary-color: #5b8df9;
+            --primary-color-rgb: 91,141,249;
+            --secondary-color: #7b5cfb;
+            --accent: #17c0b5;
+            --primary-grad: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --accent-grad: linear-gradient(90deg,#17c0b5,#3aa0ff);
+
+            --surface-grad: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(255,255,255,0.78));
+            --card-bg: rgba(255,255,255,0.90);
+
+            --shadow-sm: 0 4px 14px rgba(40,70,140,0.10);
+            --shadow-md: 0 10px 32px rgba(40,70,140,0.18);
+            --shadow-nav: 0 4px 22px rgba(40,70,140,0.25);
+
+            --border-soft: 1px solid rgba(120,140,170,0.25);
+
+            --text-color: #243041;
+            --muted-text: #5c6672;
+            --focus-ring: 0 0 0 3px rgba(91,141,249,0.35);
+            --body-bg: #e9f1ff;
+
+            color-scheme: light dark;
         }
 
+        [data-theme="dark"] {
+            --body-bg: #121a24;
+            --card-bg: rgba(22,30,40,0.92);
+            --surface-grad: linear-gradient(145deg, rgba(38,48,62,0.9), rgba(20,28,38,0.9));
+            --text-color: #eef3f9;
+            --muted-text: #9aabbc;
+            --border-soft: 1px solid rgba(255,255,255,0.12);
+            --shadow-nav: 0 4px 20px rgba(0,0,0,0.65);
+            --shadow-md: 0 10px 34px rgba(0,0,0,0.55);
+        }
+
+        html, body { height:100%; }
+
+        body {
+            margin:0;
+            font-family: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            line-height:1.45;
+            color:var(--text-color);
+            background:
+                radial-gradient(circle at 18% 24%, rgba(var(--primary-color-rgb),0.18), transparent 60%),
+                radial-gradient(circle at 82% 70%, rgba(123,92,251,0.16), transparent 65%),
+                var(--body-bg);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Optional global decorative subtle pattern layer */
+        .global-bg-overlay {
+            position: fixed;
+            inset: 0;
+            background:
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 6px);
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header { height: var(--header-height); z-index:1000; position:relative; }
+
         .navbar {
-            background-color: #007bff;
-            padding: 0.7rem 1rem;
+            background: var(--primary-grad);
+            box-shadow: var(--shadow-nav);
+            height: var(--header-height);
+            display:flex;
+            align-items:center;
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
         }
 
         .navbar-brand {
-            color: white;
-            font-weight: 600;
-            font-size: 1.6rem;
+            color:#fff;
+            font-weight:600;
+            font-size:1.32rem;
+            letter-spacing:.5px;
+            display:flex;
+            align-items:center;
+            gap:.55rem;
+        }
+        .navbar-brand:hover { color:#fff; text-decoration:none; }
+
+        .brand-badge {
+            background: rgba(255,255,255,0.20);
+            padding:4px 11px;
+            border-radius:999px;
+            font-size:.62rem;
+            font-weight:600;
+            letter-spacing:.6px;
+            text-transform:uppercase;
         }
 
-        .navbar-nav .nav-link, .navbar-nav .btn-logout {
-            color: white !important;
-            font-size: 1.1rem;
-            padding: 0.5rem 0.8rem;
+        .navbar-nav .nav-link,
+        .navbar-nav .btn-logout {
+            position:relative;
+            color:#fff !important;
+            font-size:.97rem;
+            padding:.58rem .95rem;
+            font-weight:500;
+            transition: color .25s, opacity .25s;
+        }
+
+        .navbar-nav .nav-link::after {
+            content:"";
+            position:absolute;
+            left:18%; right:18%; bottom:6px;
+            height:3px;
+            background:#fff;
+            border-radius:6px;
+            transform:scaleX(0);
+            transform-origin:center;
+            transition: transform .25s ease;
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after { transform:scaleX(1); }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .btn-logout:hover { color:#eef5ff !important; }
+
+        .hello-user {
+            color:#fff;
+            font-size:.82rem;
+            padding:.55rem .55rem;
+            opacity:.9;
         }
 
         .btn-logout {
-            background: none;
-            border: none;
-            cursor: pointer;
+            background:none;
+            border:none;
+            cursor:pointer;
         }
 
-        main {
-            padding: 60px 0;
-            min-height: 70vh;
+        .btn-logout:focus-visible,
+        .theme-toggle:focus-visible {
+            outline:none;
+            box-shadow: var(--focus-ring);
+            border-radius:10px;
         }
 
-        footer {
-            background-color: #f8f9fa;
-            padding: 1rem 0;
-            font-size: 0.9rem;
-            text-align: center;
-            color: #6c757d;
+        main[role="main"] {
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+            padding: 18px 0;
+            padding-bottom: calc(var(--footer-height) + 28px); /* space for fixed footer */
+            position:relative;
+            z-index:1;
+            animation: fadeIn .45s ease;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity:0; transform: translateY(6px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        @@media (prefers-reduced-motion: reduce) {
+            * { animation:none !important; transition:none !important; }
+        }
+
+        .content-shell {
+            background: var(--surface-grad);
+            border: var(--border-soft);
+            border-radius: 20px;
+            padding: 26px 28px 34px;
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        footer.app-footer,
+        footer.border-top.footer {
+            position:fixed;
+            inset: auto 0 0 0;
+            height: var(--footer-height);
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: var(--border-soft);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            font-size: .83rem;
+            color: var(--muted-text);
+            z-index:1100;
+            padding:0 1rem;
+        }
+        [data-theme="dark"] footer.border-top.footer {
+            background: rgba(20,28,38,0.88);
+        }
+
+        /* Icon-based theme toggle */
+        .theme-toggle {
+            --size: 42px;
+            appearance:none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.38), rgba(255,255,255,0.18));
+            border:1px solid rgba(255,255,255,0.45);
+            width:var(--size);
+            height:var(--size);
+            border-radius:14px;
+            padding:0;
+            margin-left:.55rem;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: background .35s, border-color .35s, box-shadow .35s;
+        }
+        .theme-toggle:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.28));
+            box-shadow: 0 6px 18px rgba(var(--primary-color-rgb),0.35);
+        }
+        .theme-toggle:active {
+            transform: translateY(1px);
+        }
+
+        .theme-toggle .theme-icon {
+            position:relative;
+            width:22px;
+            height:22px;
+        }
+        .theme-toggle svg {
+            position:absolute;
+            inset:0;
+            width:100%;
+            height:100%;
+            stroke-linecap:round;
+            stroke-linejoin:round;
+            stroke-width:1.8;
+        }
+        .icon-sun {
+            color:#ffd75e;
+            filter: drop-shadow(0 0 4px rgba(255,215,94,0.55));
+            transform-origin:center;
+            transition: transform .55s ease, opacity .45s ease;
+        }
+        .icon-moon {
+            color:#b9c9ff;
+            transform-origin:center;
+            transition: transform .55s ease, opacity .45s ease;
+            opacity:0;
+            transform: scale(.4) rotate(-90deg);
+        }
+        /* Dark state transforms */
+        [data-theme="dark"] .icon-sun {
+            opacity:0;
+            transform: scale(.35) rotate(140deg);
+            filter:none;
+        }
+        [data-theme="dark"] .icon-moon {
+            opacity:1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* Focus ring specialized */
+        .theme-toggle:focus-visible {
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.75), 0 0 0 6px rgba(91,141,249,0.55);
+        }
+        [data-theme="dark"] .theme-toggle:focus-visible {
+            box-shadow: 0 0 0 3px rgba(91,141,249,0.95), 0 0 0 6px rgba(23,192,181,0.55);
+        }
+
+        .btn-accent {
+            background: var(--accent-grad);
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:10px 20px;
+            font-weight:600;
+            box-shadow:0 8px 22px rgba(var(--primary-color-rgb),0.28);
+            transition: transform .25s, filter .25s;
+        }
+        .btn-accent:hover { filter:brightness(.95); transform: translateY(-2px); }
+
+        .table thead th {
+            background: var(--primary-grad);
+            color:#fff;
+            border:none;
+        }
+
+        ::-webkit-scrollbar { width:10px; }
+        ::-webkit-scrollbar-track { background:rgba(255,255,255,0.35); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary-color), var(--secondary-color));
+            border-radius:20px;
+        }
+        ::-webkit-scrollbar-thumb:hover { filter:brightness(.9); }
+
+        a:not(.nav-link):not(.btn),
+        .read-more-btn {
+            transition: color .25s, background .25s, box-shadow .25s, transform .25s;
+        }
+        a:not(.nav-link):hover { color: var(--primary-color); }
+
+        @@media (max-width: 768px) {
+            .navbar-brand { font-size:1.18rem; }
+            .navbar-nav .nav-link,
+            .navbar-nav .btn-logout { padding:.5rem .65rem; font-size:.9rem; }
+            .content-shell { padding:20px 20px 30px; }
+            .theme-toggle { --size:38px; border-radius:12px; }
         }
     </style>
 </head>
 <body>
+    <div class="global-bg-overlay" aria-hidden="true"></div>
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-0" role="navigation" aria-label="Primary">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    HospitalManagementSystem
+                    <span class="brand-badge">Add-logo</span>
+                    Razor Hospital
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -65,31 +339,35 @@
                 <div class="navbar-collapse collapse justify-content-end">
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Department" asp-action="Index">Department</a>
+                            <a class="nav-link @(Context.Request.Path.Value?.Contains("/Department") == true ? "active" : "")"
+                               asp-controller="Department" asp-action="Index">Department</a>
                         </li>
+
                         @if (User.Identity.IsAuthenticated)
                         {
-                            @if (User.IsInRole("Admin"))
+                            if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+                                    <a class="nav-link @(Context.Request.Path.Value?.Contains("/Admin") == true ? "active" : "")"
+                                       asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
                                 </li>
-                                @* <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Doctor" asp-action="Index">Manage Doctors</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Patient" asp-action="Index">Manage Patients</a>
-                                </li> *@
                             }
-
-                            @* --- Doctor Navigation --- *@
-                            @if (User.IsInRole("Doctor"))
+                            if (User.IsInRole("Doctor"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Doctor" asp-action="Dashboard">Doctor Dashboard</a>
+                                    <a class="nav-link @(Context.Request.Path.Value?.Contains("/Doctor/Dashboard") == true ? "active" : "")"
+                                       asp-controller="Doctor" asp-action="Dashboard">Doctor Dashboard</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Account" asp-action="ChangePassword">Change Password</a>
+                                    <a class="nav-link @(Context.Request.Path.Value?.Contains("/Account/ChangePassword") == true ? "active" : "")"
+                                       asp-controller="Account" asp-action="ChangePassword">Change Password</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Patient"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(Context.Request.Path.Value?.Contains("/Patient/Dashboard") == true ? "active" : "")"
+                                       asp-controller="Patient" asp-action="Dashboard">Patient Dashboard</a>
                                 </li>
                             }
                             <li class="nav-item">
@@ -100,50 +378,116 @@
                                     <button type="submit" class="btn-logout nav-link">Logout</button>
                                 </form>
                             </li>
-
-                            @* --- Patient Navigation --- *@
-                            @if (User.IsInRole("Patient"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Patient" asp-action="Dashboard">Patient Dashboard</a>
-                                </li>
-                            }
-
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">
-                                    Login
-                                </a>
+                                <a class="nav-link @(Context.Request.Path.Value?.Contains("/Account/Login") == true ? "active" : "")"
+                                   asp-controller="Account" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">
-                                    Register
-                                </a>
+                                <a class="nav-link @(Context.Request.Path.Value?.Contains("/Account/Register") == true ? "active" : "")"
+                                   asp-controller="Account" asp-action="Register">Register</a>
                             </li>
                         }
+
+                        <li class="nav-item">
+                            <button type="button" class="theme-toggle" id="themeToggle"
+                                    aria-pressed="false" aria-label="Activate dark mode" title="Toggle theme">
+                                <span class="theme-icon" aria-hidden="true">
+                                    <!-- Sun -->
+                                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="5" stroke="currentColor"/>
+                                        <path d="M12 2v2M12 20v2M4 12h2M18 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"
+                                              stroke="currentColor"/>
+                                    </svg>
+                                    <!-- Moon -->
+                                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none">
+                                        <path d="M21 13.05A9 9 0 0111.01 3a7.5 7.5 0 100 15 9 9 0 009.99-4.95Z"
+                                              stroke="currentColor" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main">
-            @RenderBody()
+    @RenderSection("PageBackground", required: false)
+
+    <div class="container py-2">
+        <main role="main" aria-live="polite">
+            @if (IsSectionDefined("DisableContentShell"))
+            {
+                @RenderBody()
+            }
+            else
+            {
+                <div class="content-shell">
+                    @RenderBody()
+                </div>
+            }
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels😁
+    <footer class="border-top footer text-muted app-footer">
+        <div>
+            &copy; @DateTime.UtcNow.Year - HospitalManagementSystem • Made by Razor Rebels 😁
+            <span style="display:inline-block;margin-left:8px;opacity:.7;">All rights reserved.</span>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            const btn = document.getElementById('themeToggle');
+            if (!btn) return;
+            const root = document.documentElement;
+
+            function applyTheme(mode) {
+                if (mode === 'dark') {
+                    root.setAttribute('data-theme', 'dark');
+                    btn.setAttribute('aria-pressed', 'true');
+                    btn.setAttribute('aria-label', 'Activate light mode');
+                    btn.title = 'Switch to light mode';
+                } else {
+                    root.removeAttribute('data-theme');
+                    btn.setAttribute('aria-pressed', 'false');
+                    btn.setAttribute('aria-label', 'Activate dark mode');
+                    btn.title = 'Switch to dark mode';
+                }
+            }
+
+            const stored = localStorage.getItem('hms-theme');
+            if (stored) {
+                applyTheme(stored);
+            } else if (window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                applyTheme('dark');
+            }
+
+            btn.addEventListener('click', () => {
+                const isDark = root.getAttribute('data-theme') === 'dark';
+                const next = isDark ? 'light' : 'dark';
+                localStorage.setItem('hms-theme', next);
+                applyTheme(next);
+            });
+
+            // Live sync if user changes OS theme while on page
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)')
+                    .addEventListener('change', e => {
+                        if (!localStorage.getItem('hms-theme')) {
+                            applyTheme(e.matches ? 'dark' : 'light');
+                        }
+                    });
+            }
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

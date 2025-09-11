@@ -1,64 +1,143 @@
 ﻿@model HospitalManagementSystem.Models.Patient
 
 @{
-    ViewData["Title"] = "Add New Patient";
+    ViewData["Title"] = "Add Patient";
 }
 
-<div class="card shadow-sm mt-4 border-primary">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h4>
-            <i class="bi bi-person-plus-fill me-2"></i> Add New Patient
-        </h4>
-        <a asp-action="Index" class="btn btn-light btn-sm">
-            <i class="bi bi-arrow-left-circle me-1"></i> Back to List
-        </a>
-    </div>
-    <div class="card-body">
+@section PageBackground {
+    <div class="patient-bg-fixed" aria-hidden="true"></div>
+    <div class="patient-bg-overlay" aria-hidden="true"></div>
+}
+
+
+<style>
+    .patient-form-wrapper {
+        position:relative; z-index:2;
+        max-width:840px; margin:0 auto;
+        padding:26px 4px 46px;
+    }
+    .form-panel {
+        background:linear-gradient(145deg,rgba(255,255,255,0.88),rgba(255,255,255,0.74));
+        border:1px solid rgba(120,140,170,0.25);
+        border-radius:30px;
+        padding:48px 52px 54px;
+        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+        box-shadow:0 24px 60px rgba(40,70,140,0.22);
+        position:relative; overflow:hidden;
+        animation:formRise .55s ease;
+    }
+    .form-panel::before {
+        content:"";
+        position:absolute;
+        width:420px;height:420px;
+        left:-190px; top:-160px;
+        background:radial-gradient(circle at 60% 60%,rgba(91,141,249,0.25),transparent 70%);
+        pointer-events:none;
+    }
+    h1.form-title {
+        font-size:2rem; font-weight:700;
+        background:linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        margin:0 0 10px;
+    }
+    .subtitle { color:#5c6672; font-size:.92rem; margin-bottom:34px; }
+
+    .form-floating > label { font-weight:500; letter-spacing:.35px; }
+    .form-floating .form-control, .form-floating .form-select {
+        background:rgba(255,255,255,0.75);
+        border:1px solid rgba(120,140,170,0.35);
+        transition:border-color .25s, box-shadow .25s, background .35s;
+    }
+    .form-floating .form-control:focus,
+    .form-floating .form-select:focus {
+        border-color:#5b8df9;
+        box-shadow:0 0 0 4px rgba(91,141,249,0.25);
+        background:rgba(255,255,255,0.95);
+    }
+
+    .action-bar { display:flex; gap:16px; flex-wrap:wrap; margin-top:6px; }
+
+    .btn-accent {
+        background:linear-gradient(135deg,#17c0b5,#3aa0ff);
+        color:#fff; border:none; border-radius:16px;
+        padding:14px 32px; font-weight:600; letter-spacing:.5px;
+        box-shadow:0 14px 32px rgba(56,160,255,0.35);
+        transition:transform .25s, box-shadow .35s, filter .25s;
+    }
+    .btn-accent:hover { transform:translateY(-4px); box-shadow:0 24px 48px rgba(56,160,255,0.40); filter:brightness(.97); }
+
+    .btn-soft {
+        background:linear-gradient(145deg,rgba(255,255,255,0.9),rgba(236,242,255,0.9));
+        border:1px solid rgba(120,140,170,0.35);
+        color:#243041; border-radius:16px;
+        padding:14px 30px; font-weight:600;
+        transition:transform .25s, background .25s;
+    }
+    .btn-soft:hover { background:linear-gradient(145deg,rgba(255,255,255,0.95),rgba(242,246,255,0.95)); transform:translateY(-2px); }
+
+    .patient-bg-fixed {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")');
+        background-size:cover; background-position:center; z-index:0;
+    }
+    .patient-bg-overlay {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background:linear-gradient(to bottom,rgba(255,255,255,0.28),rgba(255,255,255,0.08));
+        z-index:1; pointer-events:none;
+    }
+
+    @@keyframes formRise {
+        from { opacity:0; transform:translateY(16px); }
+        to { opacity:1; transform:translateY(0); }
+    }
+
+    @@media (max-width:760px) {
+        .form-panel { padding:40px 34px 46px; }
+    }
+</style>
+
+<div class="patient-form-wrapper">
+    <div class="form-panel">
+        <h1 class="form-title">Add New Patient</h1>
+        <div class="subtitle">Enter patient information to register them in the system.</div>
+
         <form asp-action="Create" method="post" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label asp-for="FullName" class="form-label">
-                    <i class="bi bi-person-fill me-1 text-primary"></i> Full Name
-                </label>
-                <input asp-for="FullName" class="form-control" placeholder="Enter patient's full name" required />
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="FullName" class="form-control" placeholder="Full Name" />
+                <label asp-for="FullName"></label>
                 <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="DOB" class="form-label">
-                    <i class="bi bi-calendar-event-fill me-1 text-primary"></i> Date of Birth
-                </label>
-                <input asp-for="DOB" type="date" class="form-control" required />
+            <div class="form-floating mb-4">
+                <input asp-for="DOB" type="date" class="form-control" placeholder="DOB" />
+                <label asp-for="DOB"></label>
                 <span asp-validation-for="DOB" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Gender" class="form-label">
-                    <i class="bi bi-gender-ambiguous me-1 text-primary"></i> Gender
-                </label>
-                <select asp-for="Gender" class="form-select" required>
+            <div class="form-floating mb-4">
+                <select asp-for="Gender" class="form-select">
                     <option value="">Select Gender</option>
                     <option>Male</option>
                     <option>Female</option>
                     <option>Other</option>
                 </select>
+                <label asp-for="Gender"></label>
                 <span asp-validation-for="Gender" class="text-danger"></span>
             </div>
 
-            
-
-            <div class="mb-3">
-                <label asp-for="ContactNumber" class="form-label">
-                    <i class="bi bi-telephone-fill me-1 text-primary"></i> Phone Number
-                </label>
-                <input asp-for="ContactNumber" type="tel" class="form-control" placeholder="Enter phone number" />
+            <div class="form-floating mb-4">
+                <input asp-for="ContactNumber" class="form-control" placeholder="Phone" />
+                <label asp-for="ContactNumber"></label>
                 <span asp-validation-for="ContactNumber" class="text-danger"></span>
             </div>
 
-            
-
-            <button type="submit" class="btn btn-primary">
-                <a class="bi bi-save me-1"></a> Save Patient
-            </button>
+            <div class="action-bar">
+                <button type="submit" class="btn-accent"><i class="bi bi-save me-1"></i> Save</button>
+                <a asp-action="Index" class="btn-soft"><i class="bi bi-arrow-left me-1"></i> Back</a>
+            </div>
         </form>
     </div>
 </div>

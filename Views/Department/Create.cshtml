@@ -4,23 +4,192 @@
     ViewData["Title"] = "Create Department";
 }
 
-<h2>Create Department</h2>
+@section PageBackground {
+    <div class="department-bg-fixed" aria-hidden="true"></div>
+    <div class="department-bg-overlay" aria-hidden="true"></div>
+}
 
-<form asp-action="Create" method="post" class="needs-validation" novalidate>
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
+<style>
+    /* Page?scoped enhancements reusing layout design tokens */
+    .dept-form-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 6px 4px 34px;
+    }
 
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-</form>
+    .glass-panel {
+        background: linear-gradient(145deg, rgba(255,255,255,0.82), rgba(255,255,255,0.72));
+        border: 1px solid rgba(120,140,170,0.25);
+        border-radius: 24px;
+        padding: 38px 42px 46px;
+        box-shadow: 0 18px 48px rgba(40,70,140,0.18);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        animation: deptFade .55s ease;
+    }
+
+    .glass-panel::before,
+    .glass-panel::after {
+        content:"";
+        position:absolute;
+        width:320px;
+        height:320px;
+        background: radial-gradient(circle at 30% 30%, rgba(91,141,249,0.22), transparent 65%);
+        top:-140px;
+        right:-140px;
+        pointer-events:none;
+        transition: opacity .5s;
+    }
+    .glass-panel::after {
+        top:auto;
+        bottom:-160px;
+        left:-140px;
+        background: radial-gradient(circle at 70% 70%, rgba(123,92,251,0.20), transparent 70%);
+    }
+    .glass-panel:hover::before,
+    .glass-panel:hover::after {
+        opacity:.95;
+    }
+
+    h2.dept-title {
+        font-weight: 700;
+        font-size: 1.9rem;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        letter-spacing: .5px;
+        margin-bottom: 14px;
+    }
+
+    .subtitle {
+        color: var(--muted-text);
+        font-size:.95rem;
+        margin-bottom:34px;
+    }
+
+    .form-floating > label {
+        font-weight:500;
+        letter-spacing:.3px;
+    }
+
+    .form-floating .form-control,
+    .form-floating .form-select {
+        background: rgba(255,255,255,0.72);
+        border:1px solid rgba(120,140,170,0.35);
+        box-shadow: inset 0 0 0 rgba(0,0,0,0);
+        transition: border-color .25s, box-shadow .25s, background .35s;
+    }
+
+    .form-floating .form-control:focus,
+    .form-floating .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(91,141,249,0.25);
+        background: rgba(255,255,255,0.92);
+    }
+
+    .validation-summary-errors,
+    .text-danger {
+        font-size:.80rem;
+    }
+
+    .action-bar {
+        display:flex;
+        gap:14px;
+        flex-wrap:wrap;
+        margin-top:10px;
+    }
+
+    .btn-accent {
+        background: var(--accent-grad);
+        color:#fff;
+        border:none;
+        border-radius:14px;
+        padding:12px 26px;
+        font-weight:600;
+        letter-spacing:.4px;
+        box-shadow:0 10px 26px rgba(91,141,249,0.30);
+        transition: transform .25s, box-shadow .3s, filter .25s;
+    }
+    .btn-accent:hover {
+        transform: translateY(-3px);
+        box-shadow:0 18px 40px rgba(91,141,249,0.35);
+        filter:brightness(.97);
+    }
+
+    .btn-soft {
+        background: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(230,238,255,0.85));
+        border:1px solid rgba(120,140,170,0.35);
+        color:#243041;
+        border-radius:14px;
+        padding:12px 24px;
+        font-weight:600;
+        transition: background .25s, transform .25s;
+    }
+    .btn-soft:hover {
+        background: linear-gradient(145deg, rgba(255,255,255,0.92), rgba(240,244,255,0.94));
+        transform: translateY(-2px);
+    }
+
+    @@media (max-width: 640px) {
+        .glass-panel { padding: 30px 26px 40px; }
+    }
+
+    @@keyframes deptFade {
+        from { opacity:0; transform: translateY(10px); }
+        to { opacity:1; transform: translateY(0); }
+    }
+
+    /* Background layer reuse from Index */
+    .department-bg-fixed {
+        position:fixed;
+        top:var(--header-height);
+        left:0; right:0;
+        bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")');
+        background-size:cover;
+        background-position:center;
+        z-index:0;
+    }
+    .department-bg-overlay {
+        position:fixed;
+        top:var(--header-height);
+        left:0; right:0;
+        bottom:var(--footer-height);
+        background:linear-gradient(to bottom, rgba(255,255,255,0.28), rgba(255,255,255,0.08));
+        z-index:1;
+        pointer-events:none;
+    }
+</style>
+
+<div class="dept-form-wrapper">
+    <div class="glass-panel">
+        <h2 class="dept-title">Create Department</h2>
+        <div class="subtitle">Add a new department to the hospital system.</div>
+
+        <form asp-action="Create" method="post" class="needs-validation" novalidate>
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="Name" class="form-control" placeholder="Department Name" />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="action-bar">
+                <button type="submit" class="btn-accent">Create</button>
+                <a asp-action="Index" class="btn-soft">Cancel</a>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
