@@ -1,6 +1,7 @@
 ﻿using HospitalManagementSystem.Data;
 using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,10 +11,12 @@ namespace HospitalManagementSystem.Repository.Repositories
     public class DoctorRepository : IDoctorRepository
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public DoctorRepository(AppDbContext context)
+        public DoctorRepository(AppDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<Doctor>> GetAllAsync()
@@ -61,5 +64,12 @@ namespace HospitalManagementSystem.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Doctor> GetByIdentityUserIdAsync(string identityUserId)
+        {
+            return await _context.Doctors
+                .FirstOrDefaultAsync(d => d.IdentityUserId == identityUserId);
+        }
+
     }
 }

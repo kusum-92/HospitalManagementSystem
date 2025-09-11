@@ -16,6 +16,9 @@ namespace HospitalManagementSystem.Models
         public int? DepartmentId { get; set; }
         public Department? Department { get; set; }
         public ICollection<Appointment> Appointments { get; set; } //get doctor by appointments
+                                                                   // Patient.cs
+        public string IdentityUserId { get; set; }  // store IdentityUser.Id (string)
+
     }
 
 }

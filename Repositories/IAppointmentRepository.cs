@@ -10,5 +10,10 @@ namespace HospitalManagementSystem.Repository.Interfaces
         void Update(Appointment appointment);
         void Delete(Appointment appointment);
         Task SaveAsync();
+
+        Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(int doctorId);
+        Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(int patientId);
+        Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync();
+
     }
 }

@@ -1,0 +1,13 @@
+﻿<div class="container mt-4">
+    <h2>Welcome, @User.Identity.Name 👋</h2>
+    <p class="lead">Here’s what you can do:</p>
+
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a asp-action="MyAppointments" asp-controller="Patient">📅 My Appointments</a>
+        </li>
+        <li class="list-group-item">
+            <a asp-action="MyInvoices" asp-controller="Patient">💳 My Invoices</a>
+        </li>
+    </ul>
+</div>

@@ -15,17 +15,28 @@
             <form asp-action="Edit">
                 <input type="hidden" asp-for="AppointmentId" />
 
-                <div class="mb-3">
-                    <label asp-for="PatientId" class="form-label">Patient</label>
-                    <select asp-for="PatientId" class="form-select" asp-items="@(new SelectList(patients, "Id", "FullName"))">
-                        <option disabled selected>-- Select Patient --</option>
-                    </select>
-                    <span asp-validation-for="PatientId" class="text-danger"></span>
-                </div>
+                @if (User.IsInRole("Admin"))
+                {
+                    <!-- Admin can pick patient -->
+                    <div class="mb-3">
+                        <label asp-for="PatientId" class="form-label">Patient</label>
+                        <select asp-for="PatientId" class="form-select"
+                                asp-items="@(new SelectList(patients, "PatientId", "FullName"))">
+                            <option disabled selected>-- Select Patient --</option>
+                        </select>
+                        <span asp-validation-for="PatientId" class="text-danger"></span>
+                    </div>
+                }
+                else if (User.IsInRole("Patient"))
+                {
+                    <!-- Patients cannot change PatientId -->
+                    <input type="hidden" asp-for="PatientId" />
+                }
 
                 <div class="mb-3">
                     <label asp-for="DoctorId" class="form-label">Doctor</label>
-                    <select asp-for="DoctorId" class="form-select" asp-items="@(new SelectList(doctors, "DoctorId", "FullName"))">
+                    <select asp-for="DoctorId" class="form-select"
+                            asp-items="@(new SelectList(doctors, "DoctorId", "FullName"))">
                         <option disabled selected>-- Select Doctor --</option>
                     </select>
                     <span asp-validation-for="DoctorId" class="text-danger"></span>
@@ -36,10 +47,19 @@
                     <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
                     <span asp-validation-for="AppointmentDate" class="text-danger"></span>
                 </div>
+
                 <button type="submit" class="btn btn-success me-2">
                     <i class="bi bi-save me-1"></i> Save Changes
                 </button>
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                @if (User.IsInRole("Patient"))
+                {
+                    <a asp-controller="Patient" asp-action="MyAppointments" class="btn btn-secondary">Back to My Appointments</a>
+                }
+                else
+                {
+                    <a asp-action="Index" class="btn btn-secondary">Back to All Appointments</a>
+                }
+
             </form>
         </div>
     </div>

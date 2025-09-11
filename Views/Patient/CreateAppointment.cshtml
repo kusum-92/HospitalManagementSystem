@@ -1,0 +1,27 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model HospitalManagementSystem.Models.Appointment
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold">Book Appointment</h2>
+
+    <form asp-action="CreateAppointment" method="post">
+        <div class="mb-3">
+            <label class="form-label">Doctor</label>
+            <select asp-for="DoctorId" class="form-select" asp-items="@(new SelectList(ViewBag.Doctors, "DoctorId", "FullName"))">
+                <option value="">-- Select Doctor --</option>
+            </select>
+            <span asp-validation-for="DoctorId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Appointment Date</label>
+            <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Book</button>
+        <a asp-action="MyAppointments" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

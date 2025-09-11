@@ -33,14 +33,21 @@ namespace HospitalManagementSystem.Repository.Repositories
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
         }
 
+        //public async Task<IEnumerable<Invoice>> GetByPatientIdAsync(int patientId)
+        //{
+        //    return await _context.Invoices
+        //        .Include(i => i.Appointment)
+        //        .Where(i => i.PatientId == patientId)
+        //        .ToListAsync();
+        //}
         public async Task<IEnumerable<Invoice>> GetByPatientIdAsync(int patientId)
         {
             return await _context.Invoices
-                .Include(i => i.Appointment)
                 .Where(i => i.PatientId == patientId)
+                .Include(i => i.Appointment)
+                .OrderByDescending(i => i.DateIssued)
                 .ToListAsync();
         }
-
         public async Task<IEnumerable<Invoice>> GetUnpaidInvoicesAsync()
         {
             return await _context.Invoices
@@ -68,6 +75,15 @@ namespace HospitalManagementSystem.Repository.Repositories
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Invoice>> GetInvoicesByPatientIdAsync(int patientId)
+        {
+            return await _context.Invoices
+                .Include(i => i.Patient)       // join with patient
+                .Include(i => i.Appointment)   // join with appointment
+                .Where(i => i.PatientId == patientId)
+                .ToListAsync();
         }
     }
 }

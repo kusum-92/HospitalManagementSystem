@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Admin Dashboard</h2>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Patients</h5>
+                    <p class="card-text">Add, edit, or remove patient records.</p>
+                    <a href="/Patient/Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Doctors</h5>
+                    <p class="card-text">Add, edit, or remove doctor records.</p>
+                    <a href="/Doctor/Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Appointments</h5>
+                    <p class="card-text">View and manage all appointments.</p>
+                    <a href="/Appointment/Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Departments</h5>
+                    <p class="card-text">Manage hospital departments.</p>
+                    <a href="/Department/Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Invoices</h5>
+                    <p class="card-text">Generate and manage invoices.</p>
+                    <a href="/Invoice/Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

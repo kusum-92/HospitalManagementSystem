@@ -51,5 +51,35 @@ namespace HospitalManagementSystem.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(int doctorId)
+        {
+            return await _context.Appointments
+                .Where(a => a.DoctorId == doctorId)
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Include(a => a.Invoice)
+                .OrderBy(a => a.AppointmentDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(int patientId)
+        {
+            return await _context.Appointments
+                .Where(a => a.PatientId == patientId)
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Include(a => a.Invoice)
+                .OrderBy(a => a.AppointmentDate)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync()
+        {
+            // If you have an "IsActive" field for doctors, filter by that
+            return await _context.Doctors
+                .AsNoTracking()
+                .OrderBy(d => d.FullName)
+                .ToListAsync();
+        }
+
     }
 }

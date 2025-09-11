@@ -1,0 +1,69 @@
+﻿@model IEnumerable<HospitalManagementSystem.Models.Appointment>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">📅 My Appointments</h2>
+        <a asp-controller="Patient" asp-action="CreateAppointment" class="btn btn-success btn-lg shadow-sm">
+            <i class="bi bi-calendar-plus"></i> New Appointment
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())   
+    {
+        <div class="alert alert-info text-center">
+            You don’t have any appointments scheduled.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover shadow-sm">
+                <thead class="table-primary">
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Doctor</th>
+                        <th>Specialization</th>
+                        <th>Invoice Status</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model)
+                    {
+                        <tr>
+                            <td>@appointment.AppointmentId</td>
+                            <td>@appointment.AppointmentDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                            <td>@appointment.Doctor?.FullName</td>
+                            <td>@appointment.Doctor?.Specialization</td>
+                            <td>
+                                @if (appointment.Invoice?.IsPaid == true)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Unpaid</span>
+                                }
+                            </td>
+                            <td>
+                            <td class="text-center">
+                                <a asp-controller="Appointment" asp-action="Details" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-primary me-1" title="View">
+                                    <i class="bi bi-eye">Details</i>
+                                </a>
+                                <a asp-controller="Appointment" asp-action="Edit" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-secondary me-1" title="Edit">
+                                    <i class="bi bi-pencil-square">Edit</i>
+                                </a>
+                                <a asp-controller="Appointment" asp-action="Delete" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash">Delete</i>
+                                </a>
+                            </td>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

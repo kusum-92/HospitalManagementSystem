@@ -16,6 +16,28 @@ namespace HospitalManagementSystem.Repository.Repositories
             _context = context;
         }
 
+        //public async Task<Patient> GetByIdentityUserIdAsync(string identityUserId)
+        //{
+        //    return await _context.Patients
+        //        .Include(p => p.Appointments)
+        //        .Include(p => p.Invoices)
+        //        .FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
+        //}
+
+        //public async Task<Patient> GetByIdentityUserIdAsync(string identityUserId)
+        //{
+        //    return await _context.Patients
+        //        .FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
+        //}
+
+        public async Task<Patient> GetByIdentityUserIdAsync(string identityUserId)
+        {
+            return await _context.Patients
+                .Include(p => p.Appointments)
+                .Include(p => p.Invoices)
+                .FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId);
+        }
+
         public async Task<IEnumerable<Patient>> GetAllAsync()
         {
             return await _context.Patients
@@ -51,5 +73,7 @@ namespace HospitalManagementSystem.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+      
     }
 }

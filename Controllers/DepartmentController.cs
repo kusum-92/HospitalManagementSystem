@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Controllers
 {
+
     public class DepartmentController : Controller
     {
         private readonly IDepartmentRepository _departmentRepo;
