@@ -1,12 +1,24 @@
-﻿<!DOCTYPE html>
+﻿@{
+    // detect Home/Index so we can render home without the .container (full-bleed)
+    var currentController = (string)ViewContext.RouteData.Values["controller"] ?? "";
+    var currentAction = (string)ViewContext.RouteData.Values["action"] ?? "";
+    var isHomeIndex = string.Equals(currentController, "Home", System.StringComparison.OrdinalIgnoreCase)
+                      && string.Equals(currentAction, "Index", System.StringComparison.OrdinalIgnoreCase);
+
+    Layout = null;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HospitalManagementSystem</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalManagementSystem.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
 
     <style>
         body {
@@ -42,15 +54,31 @@
         }
 
         footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--footer-height);
+            z-index: 1100;
             background-color: #f8f9fa;
-            padding: 1rem 0;
-            font-size: 0.9rem;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            color: #6c757d;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        main[role="main"] {
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+            padding-top: 18px;
+            padding-bottom: 18px;
         }
     </style>
 </head>
 <body>
+    <!-- HEADER (fixed) -->
     <header>
         <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -130,12 +158,11 @@
         <main role="main">
             @RenderBody()
         </main>
-    </div>
+    }
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels😁
-        </div>
+    <!-- FOOTER (fixed & centered) -->
+    <footer>
+        &copy; 2025 - HospitalManagementSystem - Made by Razor Rebels 😁
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

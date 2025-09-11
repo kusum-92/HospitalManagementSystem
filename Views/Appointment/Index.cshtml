@@ -4,69 +4,185 @@
     ViewData["Title"] = "Appointments";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary fw-bold">
-            🏥 Appointments
-        </h2>
-        <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">
-            <i class="bi bi-calendar-plus"></i> New Appointment
-        </a>
-    </div>
+@section Styles {
+    <style>
+        :root {
+            --header-height: 70px;
+            --footer-height: 60px;
+        }
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info text-center">
-            No appointments scheduled. Click "New Appointment" to get started.
+        /* Wrapper layout */
+        .appt-wrapper {
+            position: relative;
+            z-index: 1;
+            height: calc(100vh - var(--header-height) - var(--footer-height));
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 12px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .appt-bg-fixed {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-height);
+            background-image: url('@Url.Content("~/images/dept.png")');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        .appt-bg-overlay {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            bottom: var(--footer-height);
+            background: rgba(255, 255, 255, 0.25);
+            z-index: 0;
+        }
+
+        .appt-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 800px;
+            height: 80%;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(14,30,37,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .appt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+            .appt-header h2 {
+                font-size: 1.4rem;
+                margin: 0;
+                color: #4b6cb7;
+            }
+
+        .appt-table-wrap {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 260px;
+            border-radius: 6px;
+        }
+
+        /* Compact table */
+        .appt-table {
+            font-size: 0.8rem;
+        }
+
+            .appt-table th,
+            .appt-table td {
+                padding: 4px 8px;
+                line-height: 1.2;
+                vertical-align: middle;
+            }
+
+            .appt-table thead th {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+                position: sticky;
+                top: 0;
+                z-index: 3;
+                font-size: 0.85rem;
+                padding: 6px 8px;
+            }
+
+        /* Action buttons */
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+            .action-btns .btn {
+                font-size: 0.75rem;
+                padding: 3px 6px;
+            }
+    </style>
+}
+
+<!-- Background -->
+<div class="appt-bg-fixed" aria-hidden="true"></div>
+<div class="appt-bg-overlay" aria-hidden="true"></div>
+
+<div class="appt-wrapper">
+    <div class="appt-card">
+        <div class="appt-header">
+            <div>
+                <h2>Appointments</h2>
+                <div class="text-muted">Manage and schedule patient appointments</div>
+            </div>
+
+            <div>
+                <a asp-action="Create" class="btn btn-primary btn-lg" style="background:linear-gradient(135deg,#667eea,#764ba2); border:none;">
+                    + NEW APPOINTMENT
+                </a>
+            </div>
         </div>
-    }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover shadow-sm">
-                <thead class="table-primary">
-                    <tr>
-                        <th>#</th>
-                        <th>Date</th>
-                        <th>Patient</th>
-                        <th>Doctor</th>
-                        <th>Invoice Status</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var appointment in Model)
-                    {
+
+        <div class="appt-table-wrap">
+            @if (!Model.Any())
+            {
+                <div class="text-center text-muted py-4">No appointments scheduled.</div>
+            }
+            else
+            {
+                <table class="table table-hover appt-table mb-0">
+                    <thead>
                         <tr>
-                            <td>@appointment.AppointmentId</td>
-                            <td>@appointment.AppointmentDate.ToString("dd MMM yyyy hh:mm tt")</td>
-                            <td>@appointment.Patient?.FullName</td>
-                            <td>@appointment.Doctor?.FullName (@appointment.Doctor?.Specialization)</td>
-                            <td>
-                                @if (appointment.Invoice?.IsPaid == true)
-                                {
-                                    <span class="badge bg-success">Paid</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Unpaid</span>
-                                }
-                            </td>
-                            <td class="text-center">
-                                <a asp-action="Details" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-primary me-1" title="View">
-                                    <i class="bi bi-eye">Details</i>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-secondary me-1" title="Edit">
-                                    <i class="bi bi-pencil-square">Edit</i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-danger" title="Delete">
-                                    <i class="bi bi-trash">Delete</i>
-                                </a>
-                            </td>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Invoice</th>
+                            <th style="width:200px; text-align:center;">Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.AppointmentId</td>
+                                <td>@appointment.AppointmentDate.ToString("dd MMM yyyy hh:mm tt")</td>
+                                <td>@appointment.Patient?.FullName</td>
+                                <td>@appointment.Doctor?.FullName (@appointment.Doctor?.Specialization)</td>
+                                <td>
+                                    @if (appointment.Invoice?.IsPaid == true)
+                                    {
+                                        <span class="badge bg-success">Paid</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Unpaid</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="action-btns">
+                                        <a asp-action="Details" asp-route-id="@appointment.AppointmentId" class="btn btn-info btn-sm">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@appointment.AppointmentId" class="btn btn-warning btn-sm">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@appointment.AppointmentId" class="btn btn-danger btn-sm">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
-    }
+    </div>
 </div>

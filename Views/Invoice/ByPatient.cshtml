@@ -25,6 +25,13 @@
             <td>@invoice.AppointmentId</td>
             <td>
                 <a asp-action="Details" asp-route-id="@invoice.InvoiceId" class="btn btn-info btn-sm">Details</a>
+                @if (invoice.IsPaid)
+                {
+                    <form asp-action="MarkAsUnpaid" asp-route-id="@invoice.InvoiceId" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning btn-sm">Mark as Unpaid</button>
+                    </form>
+                }
             </td>
         </tr>
     }
