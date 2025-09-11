@@ -1,0 +1,241 @@
+@model IEnumerable<HospitalManagementSystem.Models.Invoice>
+@{
+    ViewData["Title"] = "Invoices by Patient";
+}
+
+@section PageBackground {
+    <div class="invoice-bg-fixed" aria-hidden="true"></div>
+    <div class="invoice-bg-overlay" aria-hidden="true"></div>
+}
+
+<style>
+    :root {
+        --header-height: 70px;
+        --footer-height: 64px;
+        --primary: #5b8df9;
+        --secondary: #7b5cfb;
+        --accent: #17c0b5;
+        --grad-main: linear-gradient(135deg,#5b8df9,#7b5cfb);
+        --panel-bg: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.80));
+        --muted: #5c6672;
+        --text: #243041;
+    }
+
+    [data-theme="dark"] :root {
+        --panel-bg: linear-gradient(145deg,rgba(34,46,60,0.94),rgba(26,36,48,0.90));
+        --muted: #c2ced8;
+        --text: #f3f7fa;
+    }
+
+    .invoice-bg-fixed, .invoice-bg-overlay { /* reused from Index (already rendered once) */
+    }
+
+    .by-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 38px 12px 68px;
+    }
+
+    .panel {
+        background: var(--panel-bg);
+        border: 1px solid rgba(120,140,170,0.30);
+        border-radius: 34px;
+        padding: 56px 60px 60px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 32px 84px rgba(40,70,140,0.26);
+        position: relative;
+        overflow: hidden;
+        animation: panelFade .55s ease;
+    }
+
+    [data-theme="dark"] .panel {
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 34px 90px rgba(0,0,0,0.70);
+    }
+
+    h1.title {
+        margin: 0 0 28px;
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    [data-theme="dark"] h1.title {
+        background: linear-gradient(90deg,#d5e6ff,#eddfff);
+        text-shadow: 0 0 6px rgba(255,255,255,.35),0 2px 10px rgba(0,0,0,.6);
+    }
+
+    .table-shell {
+        overflow: hidden;
+        border-radius: 26px;
+        border: 1px solid rgba(120,140,170,0.30);
+        background: rgba(255,255,255,0.78);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 20px 60px rgba(40,70,140,0.20);
+    }
+
+    [data-theme="dark"] .table-shell {
+        background: rgba(44,58,76,0.80);
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+    }
+
+    table.inv-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+    }
+
+    .inv-table thead th {
+        background: var(--grad-main);
+        color: #fff;
+        border: none;
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: .6px;
+        padding: 14px 16px;
+        text-transform: uppercase;
+    }
+
+    .inv-table tbody td {
+        padding: 14px 16px;
+        font-size: .9rem;
+        border-top: 1px solid rgba(120,140,170,0.25);
+    }
+
+    [data-theme="dark"] .inv-table tbody td {
+        border-top: 1px solid rgba(255,255,255,0.14);
+        color: #eef4f9;
+    }
+
+    .inv-table tbody tr {
+        transition: background .25s, transform .25s, box-shadow .4s;
+    }
+
+        .inv-table tbody tr:hover {
+            background: rgba(255,255,255,0.92);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 36px rgba(40,70,140,0.25);
+        }
+
+    [data-theme="dark"] .inv-table tbody tr:hover {
+        background: rgba(56,70,88,0.96);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.65);
+    }
+
+    .badge-paid, .badge-unpaid {
+        padding: 6px 14px;
+        font-size: .63rem;
+        letter-spacing: .55px;
+        font-weight: 600;
+        border-radius: 999px;
+        color: #fff;
+    }
+
+    .badge-paid {
+        background: linear-gradient(135deg,#17c0b5,#3aa0ff);
+        box-shadow: 0 8px 24px rgba(56,160,255,.38);
+    }
+
+    .badge-unpaid {
+        background: linear-gradient(135deg,#ffb347,#ff7b36);
+        box-shadow: 0 8px 24px rgba(255,140,70,.42);
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        margin-top: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: .8rem;
+        letter-spacing: .55px;
+        background: linear-gradient(135deg,#5b8df9,#7b5cfb);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 16px;
+        box-shadow: 0 12px 34px rgba(91,141,249,0.38);
+        transition: .35s;
+    }
+
+        .back-link:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 48px rgba(91,141,249,0.44);
+        }
+
+    @@keyframes panelFade {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width:760px) {
+        .panel {
+            padding: 50px 42px 56px;
+        }
+    }
+</style>
+
+<div class="by-wrapper">
+    <div class="panel">
+        <h1 class="title">Invoices for Patient</h1>
+
+        <div class="table-shell">
+            <table class="inv-table">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Date Issued</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Appointment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var invoice in Model)
+                    {
+                        <tr>
+                            <td>@invoice.InvoiceId</td>
+                            <td>@invoice.DateIssued.ToShortDateString()</td>
+                            <td>@invoice.Amount.ToString("C")</td>
+                            <td>
+                                @if (invoice.IsPaid)
+                                {
+                                    <span class="badge-paid">Paid</span>
+                                }
+                                else
+                                {
+
+                                    <span class="badge-unpaid">Unpaid</span>
+                                }
+                            </td>
+                            <td>@invoice.AppointmentId</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@invoice.InvoiceId" class="back-link" style="padding:6px 14px; font-size:.60rem;">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <a asp-action="Index" class="back-link" style="margin-top:40px;"><i class="bi bi-arrow-left-circle"></i> Back to All</a>
+    </div>
+</div>

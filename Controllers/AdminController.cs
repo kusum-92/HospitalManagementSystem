@@ -1,8 +1,17 @@
+﻿using Microsoft.AspNetCore.Authorization;
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
 {
+    [Authorize(Roles = "Admin")]
+    public class AdminController : Controller
+    {
+        public IActionResult Index()
+        {
+            return View();
+        }
+
     public class AdminController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;

@@ -13,5 +13,7 @@ namespace HospitalManagementSystem.Repository.Interfaces
         Task AddAsync(Invoice invoice);
         Task MarkAsPaidAsync(int invoiceId);
         Task SaveAsync();
+        Task<IEnumerable<Invoice>> GetInvoicesByPatientIdAsync(int patientId);
+
     }
 }

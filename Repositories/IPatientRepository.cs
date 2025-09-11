@@ -12,5 +12,6 @@ namespace HospitalManagementSystem.Repository.Interfaces
         void Update(Patient patient);
         void Delete(Patient patient);
         Task SaveAsync();
+        Task<Patient> GetByIdentityUserIdAsync(string identityUserId);
     }
 }

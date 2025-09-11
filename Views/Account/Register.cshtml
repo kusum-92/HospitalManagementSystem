@@ -1,0 +1,307 @@
+﻿@model HospitalManagementSystem.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section PageBackground {
+    <div class="account-bg-fixed" aria-hidden="true"></div>
+    <div class="account-bg-overlay" aria-hidden="true"></div>
+}
+
+<style>
+    :root {
+        --header-height: 70px;
+        --footer-height: 64px;
+        --primary: #5b8df9;
+        --secondary: #7b5cfb;
+        --accent: #17c0b5;
+        --grad-main: linear-gradient(135deg,#5b8df9,#7b5cfb);
+        --grad-accent: linear-gradient(90deg,#17c0b5,#3aa0ff);
+        --panel-bg: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.80));
+        --muted: #5c6672;
+        --text: #243041;
+    }
+
+    [data-theme="dark"] :root {
+        --panel-bg: linear-gradient(145deg,rgba(36,48,62,0.92),rgba(26,36,48,0.88));
+        --muted: #c2ced8;
+        --text: #f3f7fa;
+    }
+
+    .account-bg-fixed {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        bottom: var(--footer-height);
+        background-image: url('@Url.Content("~/images/dept.png")');
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+    }
+
+    .account-bg-overlay {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        bottom: var(--footer-height);
+        background: linear-gradient(to bottom,rgba(255,255,255,0.30),rgba(255,255,255,0.08));
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    [data-theme="dark"] .account-bg-overlay {
+        background: linear-gradient(to bottom,rgba(0,0,0,0.55),rgba(0,0,0,0.35));
+    }
+
+    .reg-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 42px 12px 80px;
+        min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    }
+
+    .reg-panel {
+        background: var(--panel-bg);
+        border: 1px solid rgba(120,140,170,0.30);
+        border-radius: 40px;
+        padding: 60px 64px 68px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 32px 84px rgba(40,70,140,0.28);
+        position: relative;
+        overflow: hidden;
+        animation: fadeReg .6s ease;
+    }
+
+    [data-theme="dark"] .reg-panel {
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 34px 90px rgba(0,0,0,0.70);
+    }
+
+    .reg-panel::before {
+        content: "";
+        position: absolute;
+        width: 680px;
+        height: 680px;
+        top: -300px;
+        right: -300px;
+        background: radial-gradient(circle at 35% 40%,rgba(91,141,249,0.30),transparent 72%);
+        pointer-events: none;
+    }
+
+    [data-theme="dark"] .reg-panel::before {
+        background: radial-gradient(circle at 35% 40%,rgba(91,141,249,0.22),transparent 74%);
+    }
+
+    h1.title {
+        font-size: 2.15rem;
+        font-weight: 700;
+        margin: 0 0 12px;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    [data-theme="dark"] h1.title {
+        background: linear-gradient(90deg,#d5e6ff,#eddfff);
+        text-shadow: 0 0 6px rgba(255,255,255,0.35),0 2px 10px rgba(0,0,0,0.65);
+    }
+
+    .subtitle {
+        color: var(--muted);
+        font-size: .9rem;
+        margin: 0 0 40px;
+        max-width: 520px;
+    }
+
+    [data-theme="dark"] .subtitle {
+        color: #d4dee7;
+    }
+
+    label {
+        font-weight: 600;
+        letter-spacing: .35px;
+        color: var(--text);
+    }
+
+    [data-theme="dark"] label {
+        color: #f1f5f9;
+    }
+
+    .reg-panel .form-control, .reg-panel .form-select {
+        background: rgba(255,255,255,0.85);
+        border: 1px solid rgba(120,140,170,0.35);
+        transition: .25s;
+    }
+
+    [data-theme="dark"] .reg-panel .form-control, [data-theme="dark"] .reg-panel .form-select {
+        background: rgba(48,62,82,0.82);
+        border: 1px solid rgba(255,255,255,0.14);
+        color: #eef4f9;
+    }
+
+    .reg-panel .form-control:focus, .reg-panel .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(91,141,249,0.30);
+        background: rgba(255,255,255,0.97);
+    }
+
+    [data-theme="dark"] .reg-panel .form-control:focus, [data-theme="dark"] .reg-panel .form-select:focus {
+        background: rgba(58,72,92,0.95);
+        box-shadow: 0 0 0 4px rgba(91,141,249,0.50);
+    }
+
+    .grid-two {
+        display: grid;
+        gap: 28px;
+        grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+        margin-bottom: 30px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .btn-accent {
+        background: var(--grad-accent);
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        padding: 16px 38px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        box-shadow: 0 20px 56px rgba(56,160,255,0.38);
+        transition: .35s;
+    }
+
+        .btn-accent:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 70px rgba(56,160,255,0.46);
+            filter: brightness(.97);
+        }
+
+    .btn-soft {
+        background: linear-gradient(145deg,rgba(255,255,255,0.90),rgba(236,242,255,0.90));
+        border: 1px solid rgba(120,140,170,0.35);
+        color: var(--text);
+        border-radius: 20px;
+        padding: 16px 34px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .35s;
+    }
+
+        .btn-soft:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(145deg,rgba(255,255,255,0.96),rgba(241,246,255,0.96));
+        }
+
+    [data-theme="dark"] .btn-soft {
+        background: linear-gradient(145deg,rgba(48,62,82,0.90),rgba(40,52,70,0.88));
+        border: 1px solid rgba(255,255,255,0.14);
+        color: #ecf3f8;
+    }
+
+        [data-theme="dark"] .btn-soft:hover {
+            background: linear-gradient(145deg,rgba(56,70,90,0.95),rgba(46,60,78,0.94));
+        }
+
+    .text-danger {
+        font-size: .75rem;
+    }
+
+    @@keyframes fadeReg {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width:840px) {
+        .reg-panel {
+            padding: 56px 44px 64px;
+        }
+    }
+</style>
+
+<div class="reg-wrapper">
+    <div class="reg-panel">
+        <h1 class="title">Register as Patient</h1>
+        <div class="subtitle">Create your account to manage appointments, invoices and health interactions.</div>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="grid-two">
+                <div>
+                    <label asp-for="FullName"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="DOB"></label>
+                    <input asp-for="DOB" type="date" class="form-control" />
+                    <span asp-validation-for="DOB" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Gender"></label>
+                    <select asp-for="Gender" class="form-select">
+                        <option value="">-- Select Gender --</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ContactNumber"></label>
+                    <input asp-for="ContactNumber" class="form-control" />
+                    <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ConfirmPassword"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a asp-action="Login" class="btn-soft"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                <button type="submit" class="btn-accent"><i class="bi bi-person-plus"></i> Register</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

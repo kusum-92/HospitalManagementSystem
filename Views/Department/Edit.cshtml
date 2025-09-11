@@ -4,20 +4,134 @@
     ViewData["Title"] = "Edit Department";
 }
 
-<h1>Edit Department</h1>
+@section PageBackground {
+    <div class="department-bg-fixed" aria-hidden="true"></div>
+    <div class="department-bg-overlay" aria-hidden="true"></div>
+}
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="DepartmentID" />
-    <div class="form-group mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<style>
+    .dept-form-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 6px 4px 38px;
+    }
+    .glass-panel {
+        background: linear-gradient(145deg, rgba(255,255,255,0.84), rgba(255,255,255,0.74));
+        border: 1px solid rgba(120,140,170,0.25);
+        border-radius: 26px;
+        padding: 40px 44px 46px;
+        box-shadow: 0 20px 52px rgba(40,70,140,0.20);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        animation: deptFade .5s ease;
+        position:relative;
+        overflow:hidden;
+    }
+    .glass-panel::before {
+        content:"";
+        position:absolute;
+        width:240px;
+        height:240px;
+        top:-90px; left:-90px;
+        background: radial-gradient(circle at 60% 60%, rgba(91,141,249,0.25), transparent 70%);
+        pointer-events:none;
+    }
+
+    h1.dept-title {
+        font-weight: 700;
+        font-size: 1.95rem;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip:text;
+        background-clip:text;
+        color:transparent;
+        margin-bottom: 10px;
+    }
+    .subtitle { color: var(--muted-text); font-size: .95rem; margin-bottom: 32px; }
+
+    .form-floating .form-control {
+        background: rgba(255,255,255,0.75);
+        border:1px solid rgba(120,140,170,0.35);
+        transition: border-color .25s, box-shadow .25s, background .35s;
+    }
+    .form-floating .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(91,141,249,0.25);
+        background: rgba(255,255,255,0.95);
+    }
+
+    .action-bar { display:flex; gap:14px; flex-wrap:wrap; margin-top:4px; }
+
+    .btn-accent {
+        background: var(--accent-grad);
+        color:#fff;
+        border:none;
+        border-radius:16px;
+        padding:12px 30px;
+        font-weight:600;
+        letter-spacing:.45px;
+        box-shadow:0 12px 30px rgba(91,141,249,0.30);
+        transition: transform .25s, box-shadow .3s, filter .25s;
+    }
+    .btn-accent:hover { transform:translateY(-3px); box-shadow:0 20px 46px rgba(91,141,249,0.35); filter:brightness(.97); }
+
+    .btn-soft {
+        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(235,242,255,0.9));
+        border:1px solid rgba(120,140,170,0.35);
+        color:#243041;
+        border-radius:16px;
+        padding:12px 26px;
+        font-weight:600;
+        transition: transform .25s, background .25s;
+    }
+    .btn-soft:hover { background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(240,246,255,0.95)); transform: translateY(-2px); }
+
+    @@media (max-width:640px){
+        .glass-panel { padding:32px 28px 40px; }
+    }
+
+    @@keyframes deptFade {
+        from { opacity:0; transform: translateY(12px); }
+        to { opacity:1; transform: translateY(0); }
+    }
+
+    .department-bg-fixed {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")');
+        background-size:cover; background-position:center; z-index:0;
+    }
+    .department-bg-overlay {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background:linear-gradient(to bottom, rgba(255,255,255,0.26), rgba(255,255,255,0.07));
+        z-index:1; pointer-events:none;
+    }
+</style>
+
+<div class="dept-form-wrapper">
+    <div class="glass-panel">
+        <h1 class="dept-title">Edit Department</h1>
+        <div class="subtitle">Update the details of this department.</div>
+
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="DepartmentID" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="Name" class="form-control" placeholder="Department Name" />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="action-bar">
+                <button type="submit" class="btn-accent">Save Changes</button>
+                <a asp-action="Index" class="btn-soft">Back to List</a>
+            </div>
+        </form>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</form>
+</div>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

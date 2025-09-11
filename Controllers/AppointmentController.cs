@@ -1,9 +1,13 @@
 ﻿using HospitalManagementSystem.Models;
 using HospitalManagementSystem.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace HospitalManagementSystem.Controllers
 {
@@ -14,17 +18,19 @@ namespace HospitalManagementSystem.Controllers
         private readonly IInvoiceRepository _invoiceRepo;
         private readonly IPatientRepository _patientRepo;
         private readonly IDoctorRepository _doctorRepo;
-
+        private readonly UserManager<IdentityUser> _userManager;
         public AppointmentController(
             IAppointmentRepository appointmentRepo,
             IInvoiceRepository invoiceRepo,
             IPatientRepository patientRepo,
-            IDoctorRepository doctorRepo)
+            IDoctorRepository doctorRepo,
+            UserManager<IdentityUser> userManager)
         {
             _appointmentRepo = appointmentRepo;
             _invoiceRepo = invoiceRepo;
             _patientRepo = patientRepo;
             _doctorRepo = doctorRepo;
+            _userManager = userManager;
         }
 
         // GET: /Appointment
@@ -35,6 +41,31 @@ namespace HospitalManagementSystem.Controllers
                 var patientIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (!int.TryParse(patientIdClaim, out var patientId))
                     return Unauthorized();
+
+        // GET: /Appointment/Details/5
+        [Authorize(Roles = "Admin,Doctor,Patient")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var appointment = await _appointmentRepo.GetByIdAsync(id);
+            if (appointment == null)
+                return NotFound();
+
+            if (User.IsInRole("Doctor"))
+            {
+                var userId = _userManager.GetUserId(User);
+                var doctor = await _doctorRepo.GetByIdentityUserIdAsync(userId);
+                if (doctor == null || appointment.DoctorId != doctor.DoctorId)
+                    return Forbid();
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                var userId = _userManager.GetUserId(User);
+                var patient = await _patientRepo.GetByIdentityUserIdAsync(userId);
+                if (patient == null || appointment.PatientId != patient.Id)
+                    return Forbid();
+            }
+
+            return View(appointment);
 
                 var appointments = await _appointmentRepo.GetByPatientIdAsync(patientId);
                 return View(appointments);
@@ -107,6 +138,8 @@ namespace HospitalManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: /Appointment/Edit/5
+        [Authorize(Roles = "Admin,Patient")]
         // GET: /Appointment/Details/5
         public async Task<IActionResult> Details(int id)
         {
@@ -130,15 +163,25 @@ namespace HospitalManagementSystem.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var appointment = await _appointmentRepo.GetByIdAsync(id);
-            if (appointment == null)
-                return NotFound();
+            if (appointment == null) return NotFound();
+
+            if (User.IsInRole("Patient"))
+            {
+                var userId = _userManager.GetUserId(User);
+                var patient = await _patientRepo.GetByIdentityUserIdAsync(userId);
+                if (patient == null || appointment.PatientId != patient.Id)
+                    return Forbid();
+
+                ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                return View(appointment);
+            }
 
             ViewBag.Patients = await _patientRepo.GetAllAsync();
             ViewBag.Doctors = await _doctorRepo.GetAllAsync();
             return View(appointment);
         }
 
-        // POST: /Appointment/Edit/5
+        [Authorize(Roles = "Admin,Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -149,8 +192,15 @@ namespace HospitalManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Patients = await _patientRepo.GetAllAsync();
-                ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                if (User.IsInRole("Patient"))
+                {
+                    ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                }
+                else
+                {
+                    ViewBag.Patients = await _patientRepo.GetAllAsync();
+                    ViewBag.Doctors = await _doctorRepo.GetAllAsync();
+                }
                 return View(appointment);
             }
 
@@ -170,7 +220,11 @@ namespace HospitalManagementSystem.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(Index));
+            // Redirect based on role
+            if (User.IsInRole("Patient"))
+                return RedirectToAction("MyAppointments", "Patient");
+
+            return RedirectToAction(nameof(Index)); // Admin
         }
 
         // GET: /Appointment/Delete/5
@@ -197,6 +251,11 @@ namespace HospitalManagementSystem.Controllers
             _appointmentRepo.Delete(appointment);
             await _appointmentRepo.SaveAsync();
 
+            // Redirect based on role
+            if (User.IsInRole("Patient"))
+                return RedirectToAction("MyAppointments", "Patient");
+
+            return RedirectToAction(nameof(Index)); // Admin
             return RedirectToAction(nameof(Index));
         }
     }

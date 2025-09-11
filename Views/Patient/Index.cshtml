@@ -1,64 +1,291 @@
 ﻿@model IEnumerable<HospitalManagementSystem.Models.Patient>
 
 @{
-    ViewData["Title"] = "Patient List";
+    ViewData["Title"] = "Patients";
 }
 
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary"><i class="bi bi-people-fill me-2"></i>Patients</h1>
-        <a asp-action="Create" class="btn btn-success shadow-sm">
-            <i class="bi bi-person-plus-fill me-1"></i> Add Patient
-        </a>
-    </div>
+@section PageBackground {
+    <div class="patient-bg-fixed" aria-hidden="true"></div>
+    <div class="patient-bg-overlay" aria-hidden="true"></div>
+}
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Patient Records</h5>
+
+<style>
+    :root {
+        --header-height:70px;
+        --footer-height:64px;
+        --primary-color:#5b8df9;
+        --secondary-color:#7b5cfb;
+        --accent:#17c0b5;
+        --grad-primary:linear-gradient(135deg,#5b8df9,#7b5cfb);
+        --grad-accent:linear-gradient(90deg,#17c0b5,#3aa0ff);
+        --panel-bg:linear-gradient(145deg,rgba(255,255,255,0.88),rgba(255,255,255,0.74));
+        --soft-border:1px solid rgba(120,140,170,0.28);
+        --muted:#5c6672;
+        --txt:#243041;
+    }
+
+    .patient-bg-fixed {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")');
+        background-size:cover; background-position:center;
+        z-index:0;
+    }
+    .patient-bg-overlay {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background:linear-gradient(to bottom,rgba(255,255,255,0.28),rgba(255,255,255,0.08));
+        pointer-events:none; z-index:1;
+    }
+
+    .patients-wrapper {
+        position:relative;
+        z-index:2;
+        min-height:calc(100vh - var(--header-height) - var(--footer-height));
+        padding:30px 14px 40px;
+        display:flex;
+        flex-direction:column;
+        gap:32px;
+        max-width:1250px;
+        margin:0 auto;
+    }
+
+    .panel {
+        background:var(--panel-bg);
+        border:var(--soft-border);
+        border-radius:26px;
+        padding:38px 40px 44px;
+        backdrop-filter:blur(9px);
+        -webkit-backdrop-filter:blur(9px);
+        box-shadow:0 20px 54px rgba(40,70,140,0.20);
+        position:relative;
+        overflow:hidden;
+        animation:listFade .55s ease;
+    }
+    .panel::before {
+        content:"";
+        position:absolute;
+        width:420px; height:420px;
+        top:-160px; right:-180px;
+        background:radial-gradient(circle at 35% 35%,rgba(91,141,249,0.25),transparent 70%);
+        pointer-events:none;
+    }
+
+    .panel-header {
+        display:flex;
+        flex-wrap:wrap;
+        gap:16px;
+        align-items:center;
+        justify-content:space-between;
+        margin-bottom:26px;
+    }
+
+    .panel-title {
+        font-size:2rem;
+        font-weight:700;
+        letter-spacing:.6px;
+        background:linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip:text;
+        background-clip:text;
+        color:transparent;
+        margin:0;
+        display:flex;
+        align-items:center;
+        gap:.65rem;
+    }
+
+    .quick-stats {
+        display:flex;
+        gap:18px;
+        flex-wrap:wrap;
+        margin-bottom:4px;
+    }
+    .stat-pill {
+        background:linear-gradient(145deg,rgba(255,255,255,0.9),rgba(235,242,255,0.9));
+        border:1px solid rgba(120,140,170,0.30);
+        border-radius:14px;
+        padding:10px 18px;
+        font-size:.78rem;
+        font-weight:600;
+        letter-spacing:.4px;
+        color:var(--txt);
+        display:flex;
+        align-items:center;
+        gap:.45rem;
+        box-shadow:0 6px 22px rgba(40,70,140,0.15);
+    }
+
+    .table-shell {
+        overflow:hidden;
+        border-radius:22px;
+        border:1px solid rgba(120,140,170,0.30);
+        background:rgba(255,255,255,0.70);
+        backdrop-filter:blur(6px);
+        -webkit-backdrop-filter:blur(6px);
+        box-shadow:0 14px 40px rgba(40,70,140,0.16);
+    }
+
+    table.patient-table {
+        margin:0;
+        width:100%;
+        border-collapse:separate;
+        border-spacing:0;
+    }
+
+    .patient-table thead th {
+        background:var(--grad-primary);
+        color:#fff;
+        font-weight:600;
+        font-size:.78rem;
+        letter-spacing:.65px;
+        padding:14px 16px;
+        text-transform:uppercase;
+        border:none;
+        position:relative;
+    }
+
+    .patient-table tbody td {
+        padding:14px 16px;
+        font-size:.9rem;
+        vertical-align:middle;
+        border-top:1px solid rgba(120,140,170,0.25);
+        backdrop-filter:blur(2px);
+    }
+
+    .patient-table tbody tr {
+        transition:background .25s, transform .25s, box-shadow .3s;
+    }
+    .patient-table tbody tr:hover {
+        background:rgba(255,255,255,0.85);
+        transform:translateY(-3px);
+        box-shadow:0 12px 28px rgba(40,70,140,0.18);
+    }
+
+    .empty-row td {
+        padding:46px 16px;
+        font-size:.95rem;
+        color:var(--muted);
+        font-style:italic;
+    }
+
+    .btn-action {
+        border:none;
+        border-radius:12px;
+        padding:8px 14px;
+        font-size:.7rem;
+        font-weight:600;
+        letter-spacing:.5px;
+        text-transform:uppercase;
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        transition:background .25s, box-shadow .25s, transform .25s;
+        cursor:pointer;
+    }
+    .btn-info-gradient {
+        background:linear-gradient(135deg,#5b8df9,#7b5cfb);
+        color:#fff;
+        box-shadow:0 6px 20px rgba(91,141,249,0.35);
+    }
+    .btn-info-gradient:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(91,141,249,0.40); }
+    .btn-danger-soft {
+        background:linear-gradient(135deg,#ff6b6b,#ff3d8b);
+        color:#fff;
+        box-shadow:0 6px 20px rgba(255,60,120,0.35);
+    }
+    .btn-danger-soft:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(255,60,120,0.40); }
+
+    .badge-mini {
+        background:linear-gradient(135deg,#17c0b5,#3aa0ff);
+        color:#fff;
+        font-size:.60rem;
+        padding:4px 8px;
+        border-radius:999px;
+        letter-spacing:.6px;
+        font-weight:600;
+        box-shadow:0 6px 16px rgba(56,160,255,0.30);
+    }
+
+    @@keyframes listFade {
+        from { opacity:0; transform:translateY(14px); }
+        to { opacity:1; transform:translateY(0); }
+    }
+
+    @@media (max-width:960px) {
+        .panel { padding:34px 30px 40px; }
+        .panel-title { font-size:1.7rem; }
+        .patient-table thead { font-size:.68rem; }
+    }
+    @@media (max-width:600px) {
+        .panel { padding:30px 22px 38px; }
+        .panel-header { flex-direction:column; align-items:flex-start; }
+        .patient-table thead th, .patient-table tbody td { padding:12px 12px; }
+    }
+</style>
+
+<div class="patients-wrapper">
+    <div class="panel">
+        <div class="panel-header">
+            <h1 class="panel-title">
+                <span style="display:inline-flex;width:42px;height:42px;align-items:center;justify-content:center;
+                      background:linear-gradient(135deg,#5b8df9,#7b5cfb);color:#fff;border-radius:14px;
+                      box-shadow:0 10px 24px rgba(91,141,249,0.40);">
+                    <i class="bi bi-people-fill"></i>
+                </span>
+                Patients
+            </h1>
+            <div class="quick-stats">
+                <div class="stat-pill">
+                    <i class="bi bi-list-ul"></i> Total: <strong>@Model.Count()</strong>
+                </div>
+                <div class="stat-pill">
+                    <i class="bi bi-activity"></i> Active View
+                </div>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <table class="table table-hover table-striped mb-0">
-                <thead class="table-light">
+
+        <div class="table-shell">
+            <table class="patient-table">
+                <thead>
                     <tr>
                         <th>Name</th>
                         <th>DOB</th>
                         <th>Gender</th>
                         <th>Contact</th>
-                        <th style="width: 140px;">Actions</th>
+                        <th style="width:160px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!Model.Any())
+                @if (!Model.Any())
+                {
+                    <tr class="empty-row">
+                        <td colspan="5">No patients found. Please add some.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var patient in Model)
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                No patients found. Please add some.
+                            <td>
+                                <strong>@patient.FullName</strong><br />
+                                <span class="badge-mini">ID: @patient.Id</span>
+                            </td>
+                            <td>@patient.DOB.ToString("dd MMM yyyy")</td>
+                            <td>@patient.Gender</td>
+                            <td>@patient.ContactNumber</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@patient.Id"
+                                   class="btn-action btn-info-gradient" title="Details">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@patient.Id"
+                                   class="btn-action btn-danger-soft" title="Delete">
+                                    <i class="bi bi-trash"></i> Del
+                                </a>
                             </td>
                         </tr>
                     }
-                    else
-                    {
-                        foreach (var patient in Model)
-                        {
-                            <tr>
-                                <td>@patient.FullName</td>
-                                <td>@patient.DOB.ToString("dd MMM yyyy")</td>
-                                <td>@patient.Gender</td>
-                                <td>@patient.ContactNumber</td>
-                                <td>
-                                    <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-sm btn-info me-1" title="View Details">
-                                        <i class="bi bi-eye">Details</i>
-                                    </a>
-                                    <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-sm btn-warning me-1" title="Edit Patient">
-                                        <i class="bi bi-pencil-square">Edit</i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@patient.Id" class="btn btn-sm btn-danger" title="Delete Patient">
-                                        <i class="bi bi-trash">Delete</i>
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
+                }
                 </tbody>
             </table>
         </div>

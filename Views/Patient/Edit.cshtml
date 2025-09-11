@@ -4,41 +4,137 @@
     ViewData["Title"] = "Edit Patient";
 }
 
-<h1>Edit Patient</h1>
+@section PageBackground {
+    <div class="patient-bg-fixed" aria-hidden="true"></div>
+    <div class="patient-bg-overlay" aria-hidden="true"></div>
+}
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group mb-3">
-        <label asp-for="FullName" class="form-label"></label>
-        <input asp-for="FullName" class="form-control" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
+
+<style>
+    .patient-form-wrapper { position:relative; z-index:2; max-width:860px; margin:0 auto; padding:24px 4px 48px; }
+    .form-panel {
+        background:linear-gradient(145deg,rgba(255,255,255,0.90),rgba(255,255,255,0.78));
+        border:1px solid rgba(120,140,170,0.25);
+        border-radius:32px;
+        padding:50px 56px 58px;
+        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+        box-shadow:0 24px 66px rgba(40,70,140,0.24);
+        animation:fadePanel .55s ease;
+        position:relative; overflow:hidden;
+    }
+    .form-panel::before {
+        content:""; position:absolute; width:480px; height:480px;
+        right:-200px; bottom:-200px;
+        background:radial-gradient(circle at 40% 40%,rgba(123,92,251,0.30),transparent 70%);
+        pointer-events:none;
+    }
+    h1.form-title {
+        font-size:2.05rem; font-weight:700;
+        background:linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        margin:0 0 12px;
+    }
+    .subtitle { color:#5c6672; font-size:.92rem; margin-bottom:36px; }
+
+    .form-floating .form-control,
+    .form-floating .form-select {
+        background:rgba(255,255,255,0.75);
+        border:1px solid rgba(120,140,170,0.35);
+        transition:border-color .25s, box-shadow .25s, background .35s;
+    }
+    .form-floating .form-control:focus,
+    .form-floating .form-select:focus {
+        border-color:#5b8df9;
+        box-shadow:0 0 0 4px rgba(91,141,249,0.25);
+        background:rgba(255,255,255,0.96);
+    }
+
+    .action-bar { display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; }
+
+    .btn-accent {
+        background:linear-gradient(135deg,#17c0b5,#3aa0ff);
+        color:#fff; border:none; border-radius:16px;
+        padding:14px 34px; font-weight:600; letter-spacing:.5px;
+        box-shadow:0 16px 36px rgba(56,160,255,0.35);
+        transition:transform .25s, box-shadow .35s, filter .25s;
+    }
+    .btn-accent:hover { transform:translateY(-4px); box-shadow:0 26px 54px rgba(56,160,255,0.40); filter:brightness(.97); }
+
+    .btn-soft {
+        background:linear-gradient(145deg,rgba(255,255,255,0.9),rgba(238,243,255,0.9));
+        border:1px solid rgba(120,140,170,0.35);
+        color:#243041; border-radius:16px;
+        padding:14px 32px; font-weight:600;
+        transition:transform .25s, background .25s;
+    }
+    .btn-soft:hover { background:linear-gradient(145deg,rgba(255,255,255,0.95),rgba(242,246,255,0.95)); transform:translateY(-2px); }
+
+    .patient-bg-fixed {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background-image:url('@Url.Content("~/images/dept.png")'); background-size:cover; background-position:center; z-index:0;
+    }
+    .patient-bg-overlay {
+        position:fixed; top:var(--header-height); left:0; right:0; bottom:var(--footer-height);
+        background:linear-gradient(to bottom,rgba(255,255,255,0.30),rgba(255,255,255,0.08)); z-index:1; pointer-events:none;
+    }
+
+    @@keyframes fadePanel {
+        from { opacity:0; transform:translateY(16px); }
+        to { opacity:1; transform:translateY(0); }
+    }
+
+    @@media (max-width:760px){
+        .form-panel { padding:44px 36px 52px; }
+    }
+</style>
+
+<div class="patient-form-wrapper">
+    <div class="form-panel">
+        <h1 class="form-title">Edit Patient</h1>
+        <div class="subtitle">Modify patient details and save your changes.</div>
+
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="FullName" class="form-control" placeholder="Full Name" />
+                <label asp-for="FullName"></label>
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="DOB" type="date" class="form-control" placeholder="DOB" />
+                <label asp-for="DOB"></label>
+                <span asp-validation-for="DOB" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-4">
+                <select asp-for="Gender" class="form-select">
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+                <label asp-for="Gender"></label>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="ContactNumber" class="form-control" placeholder="Contact" />
+                <label asp-for="ContactNumber"></label>
+                <span asp-validation-for="ContactNumber" class="text-danger"></span>
+            </div>
+
+            <div class="action-bar">
+                <button type="submit" class="btn-accent"><i class="bi bi-save me-1"></i> Save</button>
+                <a asp-action="Index" class="btn-soft"><i class="bi bi-arrow-left me-1"></i> Back</a>
+            </div>
+        </form>
     </div>
-    <div class="form-group mb-3">
-        <label asp-for="DOB" class="form-label"></label>
-        <input asp-for="DOB" class="form-control" type="date" />
-        <span asp-validation-for="DOB" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Gender" class="control-label"></label>
-        <select asp-for="Gender" class="form-control">
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
-        <span asp-validation-for="Gender" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="ContactNumber" class="control-label"></label>
-        <input asp-for="ContactNumber" class="form-control" />
-        <span asp-validation-for="ContactNumber" class="text-danger"></span>
-    </div>
-    <!-- Add more fields as needed -->
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</form>
+</div>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

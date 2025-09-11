@@ -1,0 +1,205 @@
+@model HospitalManagementSystem.Models.Invoice
+@{
+    ViewData["Title"] = "Mark Invoice as Paid";
+}
+
+@section PageBackground {
+    <div class="invoice-bg-fixed" aria-hidden="true"></div>
+    <div class="invoice-bg-overlay" aria-hidden="true"></div>
+}
+
+<style>
+    :root {
+        --header-height: 70px;
+        --footer-height: 64px;
+        --primary: #5b8df9;
+        --secondary: #7b5cfb;
+        --accent: #17c0b5;
+        --panel-bg: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.80));
+        --grad-accent: linear-gradient(90deg,#17c0b5,#3aa0ff);
+        --muted: #5c6672;
+        --text: #243041;
+    }
+
+    [data-theme="dark"] :root {
+        --panel-bg: linear-gradient(145deg,rgba(34,46,60,0.94),rgba(26,36,48,0.90));
+        --muted: #c2ced8;
+        --text: #f3f7fa;
+    }
+
+    .mark-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 50px 10px 80px;
+    }
+
+    .panel {
+        background: var(--panel-bg);
+        border: 1px solid rgba(120,140,170,0.30);
+        border-radius: 34px;
+        padding: 60px 60px 62px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 32px 82px rgba(40,70,140,0.28);
+        position: relative;
+        overflow: hidden;
+        animation: payFade .55s ease;
+    }
+
+    [data-theme="dark"] .panel {
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 34px 90px rgba(0,0,0,0.72);
+    }
+
+    h1.title {
+        margin: 0 0 20px;
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg,#5b8df9,#7b5cfb);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    [data-theme="dark"] h1.title {
+        background: linear-gradient(90deg,#d5e6ff,#eddfff);
+        text-shadow: 0 0 6px rgba(255,255,255,.35),0 2px 10px rgba(0,0,0,.65);
+    }
+
+    p.lead {
+        font-size: .95rem;
+        color: var(--muted);
+        margin: 0 0 30px;
+    }
+
+    [data-theme="dark"] p.lead {
+        color: #d4dee6;
+    }
+
+    dl {
+        margin: 0 0 32px;
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        row-gap: 18px;
+        column-gap: 22px;
+    }
+
+    dt {
+        font-weight: 600;
+        color: #2a3950;
+        letter-spacing: .45px;
+    }
+
+    dd {
+        margin: 0;
+        color: #455066;
+    }
+
+    [data-theme="dark"] dt {
+        color: #eef4f9;
+    }
+
+    [data-theme="dark"] dd {
+        color: #d5dee6;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-accent {
+        background: var(--grad-accent);
+        color: #fff;
+        border: none;
+        border-radius: 18px;
+        padding: 14px 30px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        box-shadow: 0 18px 48px rgba(56,160,255,0.38);
+        transition: .35s;
+        display: inline-flex;
+        gap: .55rem;
+        align-items: center;
+    }
+
+        .btn-accent:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 28px 66px rgba(56,160,255,0.46);
+            filter: brightness(.97);
+        }
+
+    .btn-soft {
+        background: linear-gradient(145deg,rgba(255,255,255,0.92),rgba(236,242,255,0.90));
+        border: 1px solid rgba(120,140,170,0.35);
+        color: #243041;
+        border-radius: 18px;
+        padding: 14px 30px;
+        font-weight: 600;
+        letter-spacing: .45px;
+        text-decoration: none;
+        transition: .35s;
+    }
+
+        .btn-soft:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(145deg,rgba(255,255,255,0.97),rgba(241,246,255,0.97));
+        }
+
+    [data-theme="dark"] .btn-soft {
+        background: linear-gradient(145deg,rgba(46,60,78,0.92),rgba(38,50,66,0.90));
+        border: 1px solid rgba(255,255,255,0.14);
+        color: #eef4f8;
+    }
+
+        [data-theme="dark"] .btn-soft:hover {
+            background: linear-gradient(145deg,rgba(56,70,90,0.96),rgba(46,60,78,0.94));
+        }
+
+    @@keyframes payFade {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width:640px) {
+        .panel {
+            padding: 52px 44px 56px;
+        }
+
+        dl {
+            grid-template-columns: 140px 1fr;
+        }
+    }
+</style>
+
+<div class="mark-wrapper">
+    <div class="panel">
+        <h1 class="title">Mark Invoice as Paid</h1>
+        <p class="lead">Confirm the payment status update for this invoice.</p>
+
+        <dl>
+            <dt>Invoice #</dt>
+            <dd>@Model.InvoiceId</dd>
+
+            <dt>Amount</dt>
+            <dd>@Model.Amount.ToString("C")</dd>
+
+            <dt>Patient</dt>
+            <dd>@Model.Patient?.FullName</dd>
+        </dl>
+
+        <form asp-action="MarkAsPaid" method="post" class="action-bar mb-0">
+            <input type="hidden" asp-for="InvoiceId" />
+            <button type="submit" class="btn-accent"><i class="bi bi-check2-circle"></i> Confirm</button>
+            <a asp-action="Index" class="btn-soft"><i class="bi bi-x-circle"></i> Cancel</a>
+        </form>
+    </div>
+</div>
