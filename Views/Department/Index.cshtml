@@ -1,4 +1,4 @@
-@model IEnumerable<HospitalManagementSystem.Models.Department>
+    @model IEnumerable<HospitalManagementSystem.Models.Department>
 
 @{
     ViewData["Title"] = "Departments";
@@ -159,6 +159,9 @@
 
 <div class="department-wrapper">
     <div class="dept-card-container">
+        @* <a asp-action="Create" class="btn-accent">
+            <i class="bi bi-person-plus"></i> New Appointment
+        </a> *@
         @if (Model != null && Model.Any())
         {
             foreach (var dept in Model)
